@@ -1,0 +1,15 @@
+.git
+.gradle
+.idea
+
+_classes_
+build
+lib
+
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip

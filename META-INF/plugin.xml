@@ -1,0 +1,49 @@
+<idea-plugin version="2">
+  <id>net.rvd.idea.p4idea</id>
+  <name>Perforce VCS Integration</name>
+  <version>0.1</version>
+  <vendor email="robinverduijn.github@gmail.com" url="http://www.github.com">RVD</vendor>
+
+  <description><![CDATA[
+      Perforce integration for Intellij IDEA, using P4Java native API.
+      ]]></description>
+
+  <change-notes><![CDATA[
+      <ul>
+      <li>Initial revision
+      </ul>
+      ]]>
+  </change-notes>
+
+  <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Build+Number+Ranges for description -->
+  <idea-version since-build="107.105"/>
+
+  <!-- please see http://confluence.jetbrains.net/display/IDEADEV/Plugin+Compatibility+with+IntelliJ+Platform+Products
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <application-components>
+    <!-- Add your application components here -->
+  </application-components>
+
+  <project-components>
+    <component>
+      <implementation-class>net.rvd.idea.PerforcePlugin</implementation-class>
+      <interface-class>net.rvd.idea.PerforcePlugin</interface-class>
+    </component>
+  </project-components>
+
+  <actions>
+    <group id="Perforce.Menu" text="Perforce" description="Perforce">
+      <action id="Perforce.Configuration" class="net.rvd.idea.ConfigurationDialog" text="Configure Perforce" description="Configure Perforce">
+        <add-to-group group-id="VcsGroups" anchor="last"/>
+      </action>
+    </group>
+  </actions>
+
+  <extensions xmlns="com.intellij" defaultExtensionNs="com.intellij">
+    <vcs name="Perforce" vcsClass="net.rvd.idea.PerforceVcs"/>
+  </extensions>
+</idea-plugin>
