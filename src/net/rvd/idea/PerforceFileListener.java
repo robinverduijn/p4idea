@@ -1,67 +1,79 @@
 package net.rvd.idea;
 
-import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.vfs.*;
+import net.rvd.perforce.P4Wrapper;
+
+import java.io.File;
 
 public class PerforceFileListener extends VirtualFileAdapter
 {
   @Override
-  public void propertyChanged( VirtualFilePropertyEvent event )
+  public void beforePropertyChange( VirtualFilePropertyEvent event )
   {
-    Logger.log( "propertyChanged", event );
+    // TODO
+    PluginLogger.log( "beforePropertyChange", event );
   }
 
   @Override
-  public void beforePropertyChange( VirtualFilePropertyEvent event )
+  public void propertyChanged( VirtualFilePropertyEvent event )
   {
-    Logger.log( "beforePropertyChange", event );
+    // TODO
+    PluginLogger.log( "propertyChanged", event );
   }
 
   @Override
   public void beforeContentsChange( VirtualFileEvent event )
   {
-    Logger.log( "beforeContentsChange", event );
-  }
-
-  @Override
-  public void beforeFileDeletion( VirtualFileEvent event )
-  {
-    Logger.log( "beforeFileDeletion", event );
-  }
-
-  @Override
-  public void beforeFileMovement( VirtualFileMoveEvent event )
-  {
-    Logger.log( "beforeFileMovement", event );
+    // Corresponds to "open for edit"
+    PluginLogger.log( "beforeContentsChange", event );
   }
 
   @Override
   public void contentsChanged( VirtualFileEvent event )
   {
-    Logger.log( "contentsChanged", event );
+    // TODO
+    PluginLogger.log( "contentsChanged", event );
   }
 
   @Override
-  public void fileCreated( VirtualFileEvent event )
+  public void beforeFileDeletion( VirtualFileEvent event )
   {
-    Logger.log( "fileCreated", event );
+    // TODO
+    PluginLogger.log( "beforeFileDeletion", event );
   }
 
   @Override
   public void fileDeleted( VirtualFileEvent event )
   {
-    Logger.log( "fileDeleted", event );
+    // Corresponds to "delete"
+    PluginLogger.log( "fileDeleted", event );
+  }
+
+  @Override
+  public void beforeFileMovement( VirtualFileMoveEvent event )
+  {
+    // TODO
+    PluginLogger.log( "beforeFileMovement", event );
   }
 
   @Override
   public void fileMoved( VirtualFileMoveEvent event )
   {
-    Logger.log( "fileMoved", event );
+    // Corresponds to "rename"
+    PluginLogger.log( "fileMoved", event );
+  }
+
+  @Override
+  public void fileCreated( VirtualFileEvent event )
+  {
+    // Corresponds to "open for add"
+    PluginLogger.log( "fileCreated", event );
   }
 
   @Override
   public void fileCopied( VirtualFileCopyEvent event )
   {
-    Logger.log( "fileCopied", event );
+    // TODO
+    PluginLogger.log( "fileCopied", event );
   }
 }

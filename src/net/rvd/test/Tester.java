@@ -1,12 +1,12 @@
 package net.rvd.test;
 
-/**
- * Created with IntelliJ IDEA.
- * User: rverduijn
- * Date: 7/10/13
- * Time: 1:25 PM
- * To change this template use File | Settings | File Templates.
- */
+import com.perforce.p4java.exception.AccessException;
+import net.rvd.idea.PluginLogger;
+import net.rvd.perforce.PluginSettings;
+
 public class Tester
 {
+  public static void main( String[] args )
+  {
+  }
 }

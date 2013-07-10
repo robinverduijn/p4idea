@@ -49,4 +49,17 @@ public class PluginSettings
     sb.append( " }" );
     return sb.toString();
   }
+
+  public void verify() throws Exception
+  {
+    P4Wrapper p4 = P4Wrapper.getInstance().initialize( this );
+    p4.showServerInfo();
+  }
+
+  public void login( String password ) throws Exception
+  {
+    P4Wrapper p4 = P4Wrapper.getInstance().initialize( this );
+    p4.login( password );
+    p4.showServerInfo();
+  }
 }
