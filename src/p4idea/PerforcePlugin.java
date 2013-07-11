@@ -5,16 +5,16 @@ import com.intellij.openapi.vfs.LocalFileSystem;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConnectionException;
 import org.jetbrains.annotations.NotNull;
+import p4idea.perforce.P4Settings;
 import p4idea.perforce.P4Wrapper;
-import p4idea.perforce.PluginSettings;
 import p4idea.vcs.P4FileAdapter;
 
-@State( name = "P4Settings", storages = { @Storage(id = "default", file = StoragePathMacros.PROJECT_FILE ) } )
-public class PerforcePlugin implements ProjectComponent, PersistentStateComponent<PluginSettings>
+@State( name = "P4Settings", storages = { @Storage( id = "default", file = StoragePathMacros.PROJECT_FILE ) } )
+public class PerforcePlugin implements ProjectComponent, PersistentStateComponent<P4Settings>
 {
   private static PerforcePlugin INSTANCE;
   private final P4FileAdapter _adapter = new P4FileAdapter();
-  private PluginSettings _settings = new PluginSettings();
+  private P4Settings _settings = new P4Settings();
 
   public PerforcePlugin()
   {
@@ -65,13 +65,13 @@ public class PerforcePlugin implements ProjectComponent, PersistentStateComponen
 
   @NotNull
   @Override
-  public PluginSettings getState()
+  public P4Settings getState()
   {
     return _settings;
   }
 
   @Override
-  public void loadState( PluginSettings settings )
+  public void loadState( P4Settings settings )
   {
     if ( null != settings )
     {
@@ -84,7 +84,7 @@ public class PerforcePlugin implements ProjectComponent, PersistentStateComponen
     }
     catch ( ConnectionException | AccessException e )
     {
-      P4Logger.getInstance().error( "Invalid settings: " + _settings, e );
+      P4Logger.getInstance().error( String.format( "Invalid settings: %s", _settings ), e );
     }
   }
 }

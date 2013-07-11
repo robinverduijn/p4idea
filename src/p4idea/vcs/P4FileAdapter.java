@@ -3,10 +3,11 @@ package p4idea.vcs;
 import com.intellij.openapi.vfs.*;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConnectionException;
+import com.perforce.p4java.server.IServerInfo;
 import p4idea.P4Logger;
 import p4idea.PerforcePlugin;
+import p4idea.perforce.P4Settings;
 import p4idea.perforce.P4Wrapper;
-import p4idea.perforce.PluginSettings;
 import p4idea.ui.UserInput;
 
 import java.io.File;
@@ -115,27 +116,23 @@ public class P4FileAdapter extends VirtualFileAdapter
 
   private boolean shouldHandle( VirtualFileEvent event )
   {
+    P4Settings settings = PerforcePlugin.getInstance().getState();
+    if ( settings.isUnset() )
+    {
+      P4Logger.getInstance().log( String.format( "Incomplete Perforce Settings: %s", settings ) );
+      return false;
+    }
     try
     {
       File file = new File( event.getFile().getCanonicalPath() );
       File root = P4Wrapper.getInstance().getP4Root();
-      return null != root && file.getAbsolutePath().startsWith( root.getAbsolutePath() );
+      boolean shouldHandle = null != root && file.getAbsolutePath().startsWith( root.getAbsolutePath() );
+      return false;
     }
-    catch ( ConnectionException e )
+    catch ( ConnectionException | AccessException ae )
     {
-      PluginSettings settings = PerforcePlugin.getInstance().getState();
-      if ( settings.isUnset() )
-      {
-        UserInput.getInstance().requestSettings();
-      }
-      else
-      {
-        P4Logger.getInstance().error( "Error connecting to Perforce", e );
-      }
-    }
-    catch ( AccessException ae )
-    {
-      if ( !UserInput.getInstance().requestCredentials() )
+      IServerInfo info = UserInput.getInstance().requestCredentials( settings );
+      if ( null == info )
       {
         try
         {
@@ -146,7 +143,7 @@ public class P4FileAdapter extends VirtualFileAdapter
           P4Logger.getInstance().error( "Error disconnecting from Perforce", e );
         }
       }
+      return false;
     }
-    return false;
   }
 }

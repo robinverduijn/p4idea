@@ -8,13 +8,14 @@ import org.jetbrains.annotations.NotNull;
 
 public class PerforceVcs extends AbstractVcs<CommittedChangeList>
 {
-  private static final String NAME = "Perforce";
+  public static final String NAME = "Perforce";
 
-  private Configurable _configurable;
+  private final Configurable _configurable;
 
   public PerforceVcs( @NotNull Project project )
   {
     super( project, NAME );
+    _configurable = new P4Configurable( project );
   }
 
   @Override

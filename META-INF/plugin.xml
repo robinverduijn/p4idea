@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>net.rvd.idea.p4idea</id>
   <name>Perforce VCS Integration</name>
-  <version>0.2</version>
+  <version>0.3</version>
   <vendor email="robinverduijn.github@gmail.com" url="http://www.github.com">RVD</vendor>
 
   <description><![CDATA[
@@ -12,6 +12,8 @@
       <ul>
       <li>0.1: Initial revision.
       <li>0.2: Basic plugin structure in place, settings are prompted for and persisted, P4 authentication working.
+      <li>0.3: Proper integration in IDEA settings panel, first stubs for proper VCS provider implementation, get rid
+               of old dialog-based configuration.
       </ul>
       ]]>
   </change-notes>
@@ -37,11 +39,13 @@
   </project-components>
 
   <actions>
+<!--
     <group id="Perforce.Menu" text="Perforce" description="Perforce">
       <action id="Perforce.Configuration" class="p4idea.ui.ConfigurationScreen" text="Configure Perforce" description="Configure Perforce">
         <add-to-group group-id="VcsGroups" anchor="last"/>
       </action>
     </group>
+-->
   </actions>
 
   <extensions xmlns="com.intellij" defaultExtensionNs="com.intellij">

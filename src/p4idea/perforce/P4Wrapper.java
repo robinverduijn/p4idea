@@ -30,7 +30,7 @@ public class P4Wrapper
     return INSTANCE;
   }
 
-  public P4Wrapper initialize( PluginSettings settings ) throws ConnectionException, AccessException
+  public P4Wrapper initialize( P4Settings settings ) throws ConnectionException, AccessException
   {
     disconnect();
 
@@ -151,8 +151,7 @@ public class P4Wrapper
     _messages.clear();
   }
 
-  public void showServerInfo() throws ConnectionException, RequestException,
-      AccessException
+  public IServerInfo showServerInfo() throws ConnectionException, RequestException, AccessException
   {
     try
     {
@@ -172,6 +171,7 @@ public class P4Wrapper
       {
         P4Logger.getInstance().log( "Unable to determine server info" );
       }
+      return info;
     }
     finally
     {

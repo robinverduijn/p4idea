@@ -2,10 +2,11 @@ package p4idea.ui;
 
 import com.intellij.openapi.ui.Messages;
 import com.perforce.p4java.exception.*;
+import com.perforce.p4java.server.IServerInfo;
 import p4idea.P4Logger;
-import p4idea.PerforcePlugin;
-import p4idea.perforce.PluginSettings;
+import p4idea.perforce.P4Settings;
 
+import javax.swing.*;
 import java.net.URISyntaxException;
 
 public class UserInput
@@ -21,17 +22,15 @@ public class UserInput
     return INSTANCE;
   }
 
-  public boolean requestCredentials()
+  public IServerInfo requestCredentials( final P4Settings settings )
   {
-    final PluginSettings settings = PerforcePlugin.getInstance().getState();
     final String msg = String.format( "Perforce Password for User %s", settings.getP4user() );
     final String title = "Login to Perforce";
 
     String password = Messages.showPasswordDialog( msg, title );
     try
     {
-      settings.login( password );
-      return true;
+      return settings.login( password );
     }
     catch ( ConnectionException | RequestException e )
     {
@@ -51,40 +50,23 @@ public class UserInput
       P4Logger.getInstance().error( error, e );
       Messages.showErrorDialog( e.getMessage(), error );
     }
-    return false;
+    return null;
   }
 
-  public void requestSettings()
+  public void displayPerforceInfo( JPanel panel, IServerInfo info )
   {
-    final String title = "Perforce Settings";
-    PluginSettings settings = PerforcePlugin.getInstance().getState();
+    final String title = "Perforce Connection Successful";
+    StringBuilder message = new StringBuilder();
+    message.append( "<html>" );
+    message.append( String.format( "Server: %s<br>", info.getServerAddress() ) );
+    message.append( String.format( "User: %s<br>", info.getUserName() ) );
+    message.append( String.format( "Client: %s<br>", info.getClientName() ) );
+    message.append( String.format( "Root: %s<br>", info.getClientRoot() ) );
+    message.append( String.format( "Version: %s<br>", info.getServerVersion() ) );
+    message.append( String.format( "Uptime: %s<br>", info.getServerUptime() ) );
+    message.append( String.format( "Server Root: %s", info.getServerRoot() ) );
+    message.append( "</html>" );
 
-    String port = promptForText( "Server", title, settings.getP4port() );
-    if ( !isEmpty( port ) )
-    {
-      settings.setP4port( port );
-    }
-
-    String client = promptForText( "Client Spec", title, settings.getP4client() );
-    if ( !isEmpty( client ) )
-    {
-      settings.setP4client( client );
-    }
-
-    String user = promptForText( "Username", title, settings.getP4user() );
-    if ( !isEmpty( user ) )
-    {
-      settings.setP4user( user );
-    }
-  }
-
-  private String promptForText( String prompt, String title, String defaultValue )
-  {
-    return Messages.showInputDialog( prompt, title, Messages.getQuestionIcon(), defaultValue, null );
-  }
-
-  private boolean isEmpty( String text )
-  {
-    return null == text || "".equals( text.trim() );
+    Messages.showInfoMessage( panel, message.toString(), title );
   }
 }
