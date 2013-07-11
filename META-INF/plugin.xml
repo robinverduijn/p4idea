@@ -45,6 +45,6 @@
   </actions>
 
   <extensions xmlns="com.intellij" defaultExtensionNs="com.intellij">
-    <vcs name="Perforce" vcsClass="p4idea.vcs.PerforceVcs"/>
+    <vcs name="Perforce" vcsClass="p4idea.vcs.PerforceVcs" displayName="Perforce" administrativeAreaName=".p4"/>
   </extensions>
 </idea-plugin>

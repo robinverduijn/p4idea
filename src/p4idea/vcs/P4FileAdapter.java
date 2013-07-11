@@ -4,8 +4,10 @@ import com.intellij.openapi.vfs.*;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConnectionException;
 import p4idea.P4Logger;
-import p4idea.ui.UserInput;
+import p4idea.PerforcePlugin;
 import p4idea.perforce.P4Wrapper;
+import p4idea.perforce.PluginSettings;
+import p4idea.ui.UserInput;
 
 import java.io.File;
 
@@ -121,7 +123,15 @@ public class P4FileAdapter extends VirtualFileAdapter
     }
     catch ( ConnectionException e )
     {
-      P4Logger.getInstance().error( "Error connecting to Perforce", e );
+      PluginSettings settings = PerforcePlugin.getInstance().getState();
+      if ( settings.isUnset() )
+      {
+        UserInput.getInstance().requestSettings();
+      }
+      else
+      {
+        P4Logger.getInstance().error( "Error connecting to Perforce", e );
+      }
     }
     catch ( AccessException ae )
     {

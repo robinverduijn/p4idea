@@ -55,6 +55,11 @@ public class PluginSettings
     return sb.toString();
   }
 
+  public boolean isUnset()
+  {
+    return null == _p4port || null == _p4user || null == _p4client;
+  }
+
   public void verify() throws ConnectionException, AccessException,
       RequestException
   {
