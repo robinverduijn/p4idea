@@ -76,6 +76,7 @@ public class PerforcePlugin implements ProjectComponent, PersistentStateComponen
     if ( null != settings )
     {
       _settings = settings;
+      P4Logger.getInstance().log( String.format( "Using %s", _settings ) );
     }
     try
     {

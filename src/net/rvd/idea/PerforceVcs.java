@@ -1,12 +1,13 @@
 package net.rvd.idea;
 
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.VcsKey;
 import org.jetbrains.annotations.NotNull;
 
-public class PerforceVcs extends AbstractVcs
+public class PerforceVcs extends AbstractVcs implements Disposable
 {
   private Configurable _configurable;
 
@@ -26,5 +27,11 @@ public class PerforceVcs extends AbstractVcs
   public synchronized Configurable getConfigurable()
   {
     return _configurable;
+  }
+
+  @Override
+  public void dispose()
+  {
+    P4Logger.getInstance().log( "Trying to dispose of PerforceVcs provider" );
   }
 }

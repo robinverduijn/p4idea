@@ -116,9 +116,7 @@ public class P4FileAdapter extends VirtualFileAdapter
     {
       File file = new File( event.getFile().getCanonicalPath() );
       File root = P4Wrapper.getInstance().getP4Root();
-      boolean result = null != root && file.getAbsolutePath().startsWith( root.getAbsolutePath() );
-      P4Logger.getInstance().log( String.format( "%s under %s: %b", file, root, result ) );
-      return result;
+      return null != root && file.getAbsolutePath().startsWith( root.getAbsolutePath() );
     }
     catch ( ConnectionException e )
     {
