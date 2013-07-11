@@ -5,10 +5,9 @@ import com.perforce.p4java.core.*;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.impl.generic.core.file.FileSpec;
-import net.rvd.idea.PluginLogger;
+import net.rvd.idea.P4Logger;
 
 import java.io.File;
-import java.net.URISyntaxException;
 import java.util.*;
 
 public class P4WrapperTemp extends P4Wrapper
@@ -110,7 +109,7 @@ public class P4WrapperTemp extends P4Wrapper
     {
       return -1;
     }
-    PluginLogger.log( String.format( "Reverted: %s", file ) );
+    P4Logger.getInstance().log( String.format( "Reverted: %s", file ) );
     return reverted.get( 0 ).getChangelistId();
   }
 
@@ -129,14 +128,14 @@ public class P4WrapperTemp extends P4Wrapper
       List<IFileSpec> openedFiles = client.openedFiles( fileSpecs, -1, -1 );
       if ( openedFiles.isEmpty() )
       {
-        PluginLogger.log( "File(s) were not open for edit: " + files );
+        P4Logger.getInstance().log( "File(s) were not open for edit: " + files );
         return Collections.emptyList();
       }
 
       List<IFileSpec> revertedFiles = client.revertFiles( openedFiles, false, -1, revertOnlyUnchanged, false );
       if ( !revertedFiles.isEmpty() )
       {
-        PluginLogger.log( String.format( "Reverted %d file(s)", revertedFiles.size() ) );
+        P4Logger.getInstance().log( String.format( "Reverted %d file(s)", revertedFiles.size() ) );
       }
       return revertedFiles;
     }
@@ -187,7 +186,8 @@ public class P4WrapperTemp extends P4Wrapper
     }
     catch ( ConnectionException | AccessException | RequestException e )
     {
-      PluginLogger.error( String.format( "P4: error looking up user \"%s\"", id ), e );
+      final String error = String.format( "P4: error looking up user \"%s\"", id );
+      P4Logger.getInstance().error( error, e );
       return null;
     }
     finally

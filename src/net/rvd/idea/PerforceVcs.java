@@ -18,7 +18,7 @@ public class PerforceVcs extends AbstractVcs
   @Override
   public String getDisplayName()
   {
-    return "Perforce Integration";
+    return "Perforce VCS Integration";
   }
 
   @NotNull

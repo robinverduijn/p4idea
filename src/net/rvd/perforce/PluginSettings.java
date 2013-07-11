@@ -44,12 +44,13 @@ public class PluginSettings
   public String toString()
   {
     StringBuilder sb = new StringBuilder();
-    sb.append( "PluginSettings{ " );
-    sb.append( "p4client=" ).append( _p4client );
-    sb.append( ", " );
+    sb.append( getClass().getSimpleName() );
+    sb.append( "{ " );
     sb.append( "p4port=" ).append( _p4port );
     sb.append( ", " );
     sb.append( "p4user=" ).append( _p4user );
+    sb.append( ", " );
+    sb.append( "p4client=" ).append( _p4client );
     sb.append( " }" );
     return sb.toString();
   }

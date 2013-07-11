@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>net.rvd.idea.p4idea</id>
   <name>Perforce VCS Integration</name>
-  <version>0.1</version>
+  <version>0.2</version>
   <vendor email="robinverduijn.github@gmail.com" url="http://www.github.com">RVD</vendor>
 
   <description><![CDATA[
@@ -10,7 +10,8 @@
 
   <change-notes><![CDATA[
       <ul>
-      <li>Initial revision
+      <li>0.1: Initial revision.
+      <li>0.2: Basic plugin structure in place, settings are prompted for and persisted, P4 authentication working.
       </ul>
       ]]>
   </change-notes>
@@ -37,7 +38,7 @@
 
   <actions>
     <group id="Perforce.Menu" text="Perforce" description="Perforce">
-      <action id="Perforce.Configuration" class="net.rvd.idea.ConfigurationDialog" text="Configure Perforce" description="Configure Perforce">
+      <action id="Perforce.Configuration" class="net.rvd.idea.ui.ConfigurationScreen" text="Configure Perforce" description="Configure Perforce">
         <add-to-group group-id="VcsGroups" anchor="last"/>
       </action>
     </group>

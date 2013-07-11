@@ -3,7 +3,7 @@ package net.rvd.perforce;
 import com.perforce.p4java.client.IClient;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.server.*;
-import net.rvd.idea.PluginLogger;
+import net.rvd.idea.P4Logger;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -146,7 +146,7 @@ public class P4Wrapper
   {
     for ( String message : _messages )
     {
-      PluginLogger.log( "P4: " + message );
+      P4Logger.getInstance().log( "P4: " + message );
     }
     _messages.clear();
   }
@@ -159,17 +159,18 @@ public class P4Wrapper
       IServerInfo info = getP4Server().getServerInfo();
       if ( info != null )
       {
-        PluginLogger.log( String.format( "Server: %s", info.getServerAddress() ) );
-        PluginLogger.log( String.format( "User: %s", info.getUserName() ) );
-        PluginLogger.log( String.format( "Client: %s", info.getClientName() ) );
-        PluginLogger.log( String.format( "Root: %s", info.getClientRoot() ) );
-        PluginLogger.log( String.format( "Version: %s", info.getServerVersion() ) );
-        PluginLogger.log( String.format( "Uptime: %s", info.getServerUptime() ) );
-        PluginLogger.log( String.format( "Server Root: %s", info.getServerRoot() ) );
+        P4Logger logger = P4Logger.getInstance();
+        logger.log( String.format( "Server: %s", info.getServerAddress() ) );
+        logger.log( String.format( "User: %s", info.getUserName() ) );
+        logger.log( String.format( "Client: %s", info.getClientName() ) );
+        logger.log( String.format( "Root: %s", info.getClientRoot() ) );
+        logger.log( String.format( "Version: %s", info.getServerVersion() ) );
+        logger.log( String.format( "Uptime: %s", info.getServerUptime() ) );
+        logger.log( String.format( "Server Root: %s", info.getServerRoot() ) );
       }
       else
       {
-        PluginLogger.log( "Unable to determine server info" );
+        P4Logger.getInstance().log( "Unable to determine server info" );
       }
     }
     finally

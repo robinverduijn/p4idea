@@ -7,13 +7,13 @@ import com.perforce.p4java.exception.ConnectionException;
 import net.rvd.perforce.P4Wrapper;
 import net.rvd.perforce.PluginSettings;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-@State(name = "PerforcePluginSettings", storages = { @Storage(id = "default", file = StoragePathMacros.PROJECT_FILE) })
+@State( name = "PerforcePluginSettings", storages = { @Storage( id = "default", file = StoragePathMacros.PROJECT_FILE
+) } )
 public class PerforcePlugin implements ProjectComponent, PersistentStateComponent<PluginSettings>
 {
   private static PerforcePlugin INSTANCE;
-  private final PerforceFileListener _listener = new PerforceFileListener();
+  private final P4FileAdapter _adapter = new P4FileAdapter();
   private PluginSettings _settings = new PluginSettings();
 
   public PerforcePlugin()
@@ -29,20 +29,20 @@ public class PerforcePlugin implements ProjectComponent, PersistentStateComponen
   @Override
   public void initComponent()
   {
-    LocalFileSystem.getInstance().addVirtualFileListener( _listener );
+    LocalFileSystem.getInstance().addVirtualFileListener( _adapter );
   }
 
   @Override
   public void disposeComponent()
   {
-    LocalFileSystem.getInstance().removeVirtualFileListener( _listener );
+    LocalFileSystem.getInstance().removeVirtualFileListener( _adapter );
     try
     {
       P4Wrapper.getInstance().disconnect();
     }
     catch ( ConnectionException | AccessException e )
     {
-      PluginLogger.error( e.getMessage(), e );
+      P4Logger.getInstance().error( e.getMessage(), e );
     }
   }
 
@@ -63,7 +63,7 @@ public class PerforcePlugin implements ProjectComponent, PersistentStateComponen
   {
   }
 
-  @Nullable
+  @NotNull
   @Override
   public PluginSettings getState()
   {
@@ -73,14 +73,17 @@ public class PerforcePlugin implements ProjectComponent, PersistentStateComponen
   @Override
   public void loadState( PluginSettings settings )
   {
-    _settings = settings;
+    if ( null != settings )
+    {
+      _settings = settings;
+    }
     try
     {
-      P4Wrapper p4 = P4Wrapper.getInstance().initialize( _settings );
+      P4Wrapper.getInstance().initialize( _settings );
     }
     catch ( ConnectionException | AccessException e )
     {
-      PluginLogger.error( "Invalid settings: " + _settings, e );
+      P4Logger.getInstance().error( "Invalid settings: " + _settings, e );
     }
   }
 }
