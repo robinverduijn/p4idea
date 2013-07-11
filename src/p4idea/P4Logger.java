@@ -23,6 +23,6 @@ public class P4Logger
 
   public void error( String message, Throwable t )
   {
-    PluginManager.getLogger().error( message, t );
+    Logger.getInstance( "P4" ).error( message, t );
   }
 }

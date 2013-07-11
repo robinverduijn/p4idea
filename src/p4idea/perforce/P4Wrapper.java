@@ -205,13 +205,21 @@ public class P4Wrapper
 
   public List<IFileSpec> openForEdit( VirtualFile[] files ) throws P4JavaException
   {
-    return openForEdit( getDefaultChangelist(), files );
+    List<IFileSpec> fileSpecs = fromVirtualFiles( files );
+    try
+    {
+      IClient client = getP4Server().getCurrentClient();
+      return client.editFiles( fileSpecs, false, false, -1, null );
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
   }
 
-  public List<IFileSpec> openForEdit( IChangelist changelist, VirtualFile[] files ) throws ConnectionException,
+  private List<IFileSpec> openForEdit( IChangelist changelist, VirtualFile[] files ) throws ConnectionException,
       RequestException, AccessException
   {
-    P4Logger.getInstance().log( "Using changelist " + changelist.getId() + ": " + changelist.getDescription() );
     List<IFileSpec> fileSpecs = fromVirtualFiles( files );
     try
     {
