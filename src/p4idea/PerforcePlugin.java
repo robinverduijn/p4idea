@@ -29,13 +29,13 @@ public class PerforcePlugin implements ProjectComponent, PersistentStateComponen
   @Override
   public void initComponent()
   {
-    LocalFileSystem.getInstance().addVirtualFileListener( _adapter );
+    //LocalFileSystem.getInstance().addVirtualFileListener( _adapter );
   }
 
   @Override
   public void disposeComponent()
   {
-    LocalFileSystem.getInstance().removeVirtualFileListener( _adapter );
+    //LocalFileSystem.getInstance().removeVirtualFileListener( _adapter );
     try
     {
       P4Wrapper.getInstance().disconnect();

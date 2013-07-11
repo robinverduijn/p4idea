@@ -31,10 +31,6 @@ public class PerforceVcsPanel
     _p4port.setText( settings.getP4port() );
     _p4user.setText( settings.getP4user() );
     _p4client.setText( settings.getP4client() );
-    if ( settings.isUnset() )
-    {
-      _testButton.setEnabled( false );
-    }
   }
 
   public JComponent getPanel()
@@ -65,6 +61,14 @@ public class PerforceVcsPanel
     {
       P4Settings testSettings = new P4Settings();
       apply( testSettings );
+
+      if ( testSettings.isUnset() )
+      {
+        final String title = "Error Connecting to Perforce";
+        final String error = String.format( "Incomplete Perforce Settings: %s", testSettings );
+        Messages.showErrorDialog( error, title );
+        return;
+      }
 
       try
       {
