@@ -1,9 +1,6 @@
 package net.rvd.idea;
 
 import com.intellij.openapi.vfs.*;
-import net.rvd.perforce.P4Wrapper;
-
-import java.io.File;
 
 public class PerforceFileListener extends VirtualFileAdapter
 {

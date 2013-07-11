@@ -1,7 +1,6 @@
 package net.rvd.idea;
 
 import com.intellij.openapi.components.*;
-import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConnectionException;
@@ -10,7 +9,7 @@ import net.rvd.perforce.PluginSettings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@State( name = "PerforcePluginSettings", storages = { @Storage( id = "default", file = StoragePathMacros.PROJECT_FILE ) } )
+@State(name = "PerforcePluginSettings", storages = { @Storage(id = "default", file = StoragePathMacros.PROJECT_FILE) })
 public class PerforcePlugin implements ProjectComponent, PersistentStateComponent<PluginSettings>
 {
   private static PerforcePlugin INSTANCE;

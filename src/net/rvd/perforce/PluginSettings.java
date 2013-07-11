@@ -1,5 +1,9 @@
 package net.rvd.perforce;
 
+import com.perforce.p4java.exception.*;
+
+import java.net.URISyntaxException;
+
 public class PluginSettings
 {
   private String _p4client;
@@ -50,13 +54,15 @@ public class PluginSettings
     return sb.toString();
   }
 
-  public void verify() throws Exception
+  public void verify() throws ConnectionException, AccessException,
+      RequestException
   {
     P4Wrapper p4 = P4Wrapper.getInstance().initialize( this );
     p4.showServerInfo();
   }
 
-  public void login( String password ) throws Exception
+  public void login( String password ) throws ConnectionException, AccessException, ConfigException,
+      ResourceException, NoSuchObjectException, RequestException, URISyntaxException
   {
     P4Wrapper p4 = P4Wrapper.getInstance().initialize( this );
     p4.login( password );

@@ -8,11 +8,12 @@ import com.perforce.p4java.impl.generic.core.file.FileSpec;
 import net.rvd.idea.PluginLogger;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.*;
 
 public class P4WrapperTemp extends P4Wrapper
 {
-  public IChangelist createChangelist( String description ) throws Exception
+  public IChangelist createChangelist( String description ) throws P4JavaException
   {
     try
     {
@@ -25,12 +26,14 @@ public class P4WrapperTemp extends P4Wrapper
     }
   }
 
-  public void revertChangelist( IChangelist changelist ) throws Exception
+  public void revertChangelist( IChangelist changelist ) throws ConnectionException, RequestException,
+      AccessException
   {
     revertChangelist( changelist.getId() );
   }
 
-  public void revertChangelist( int changelist ) throws Exception
+  public void revertChangelist( int changelist ) throws ConnectionException, RequestException,
+      AccessException
   {
     try
     {
@@ -55,7 +58,8 @@ public class P4WrapperTemp extends P4Wrapper
     }
   }
 
-  public List<IFileSpec> openForAdd( IChangelist changelist, List<File> files ) throws Exception
+  public List<IFileSpec> openForAdd( IChangelist changelist, List<File> files ) throws ConnectionException,
+      AccessException
   {
     List<IFileSpec> fileSpecs = new ArrayList<>();
     for ( File file : files )
@@ -73,12 +77,14 @@ public class P4WrapperTemp extends P4Wrapper
     }
   }
 
-  public List<IFileSpec> openForEdit( IChangelist changelist, File file ) throws Exception
+  public List<IFileSpec> openForEdit( IChangelist changelist, File file ) throws ConnectionException,
+      RequestException, AccessException
   {
     return openForEdit( changelist, Arrays.asList( file ) );
   }
 
-  public List<IFileSpec> openForEdit( IChangelist changelist, List<File> files ) throws Exception
+  public List<IFileSpec> openForEdit( IChangelist changelist, List<File> files ) throws ConnectionException,
+      RequestException, AccessException
   {
     List<IFileSpec> fileSpecs = new ArrayList<>();
     for ( File file : files )
@@ -96,7 +102,8 @@ public class P4WrapperTemp extends P4Wrapper
     }
   }
 
-  public int revertEdit( File file ) throws Exception
+  public int revertEdit( File file ) throws ConnectionException,
+      AccessException
   {
     List<IFileSpec> reverted = revertEdit( Arrays.asList( file ), false );
     if ( reverted.isEmpty() )
@@ -107,7 +114,8 @@ public class P4WrapperTemp extends P4Wrapper
     return reverted.get( 0 ).getChangelistId();
   }
 
-  public List<IFileSpec> revertEdit( List<File> files, boolean revertOnlyUnchanged ) throws Exception
+  public List<IFileSpec> revertEdit( List<File> files, boolean revertOnlyUnchanged ) throws ConnectionException,
+      AccessException
   {
     List<IFileSpec> fileSpecs = new ArrayList<>();
     for ( File file : files )
@@ -138,7 +146,8 @@ public class P4WrapperTemp extends P4Wrapper
     }
   }
 
-  public List<IChangelistSummary> getChangelists( String path ) throws Exception
+  public List<IChangelistSummary> getChangelists( String path ) throws ConnectionException, RequestException,
+      AccessException
   {
     try
     {
@@ -152,7 +161,8 @@ public class P4WrapperTemp extends P4Wrapper
     }
   }
 
-  public List<String> getChangelistFiles( int changelist ) throws Exception
+  public List<String> getChangelistFiles( int changelist ) throws ConnectionException, RequestException,
+      AccessException
   {
     try
     {
@@ -169,13 +179,13 @@ public class P4WrapperTemp extends P4Wrapper
     }
   }
 
-  public IUser getUser( String id ) throws Exception
+  public IUser getUser( String id ) throws ConnectionException, AccessException
   {
     try
     {
       return getP4Server().getUser( id );
     }
-    catch ( Exception e )
+    catch ( ConnectionException | AccessException | RequestException e )
     {
       PluginLogger.error( String.format( "P4: error looking up user \"%s\"", id ), e );
       return null;

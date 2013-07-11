@@ -1,12 +1,12 @@
 package net.rvd.perforce;
 
 import com.perforce.p4java.client.IClient;
-import com.perforce.p4java.exception.AccessException;
-import com.perforce.p4java.exception.ConnectionException;
+import com.perforce.p4java.exception.*;
 import com.perforce.p4java.server.*;
 import net.rvd.idea.PluginLogger;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,23 +42,21 @@ public class P4Wrapper
     return this;
   }
 
-  public File getP4Root()
+  public File getP4Root() throws ConnectionException, AccessException
   {
     if ( null == _p4root )
     {
-      try
+      IClient client = getP4Server().getCurrentClient();
+      if ( null != client )
       {
-        _p4root = new File( getP4Server().getCurrentClient().getRoot() );
-      }
-      catch( Exception e )
-      {
-        PluginLogger.error( "Unable to determine P4 root", e );
+        _p4root = new File( client.getRoot() );
       }
     }
     return _p4root;
   }
 
-  public void login( String password ) throws Exception
+  public void login( String password ) throws ConnectionException, RequestException, URISyntaxException,
+      ResourceException, AccessException, ConfigException, NoSuchObjectException
   {
     try
     {
@@ -75,12 +73,20 @@ public class P4Wrapper
    * (optional null) password is specified. The caller is responsible for calling {@link IServer#disconnect()} on the
    * returned connection when it is no longer needed.
    */
-  protected IServer getP4Server() throws Exception
+  protected IServer getP4Server() throws AccessException, ConnectionException
   {
-    return getP4Server( null );
+    try
+    {
+      return getP4Server( null );
+    }
+    catch ( NoSuchObjectException | URISyntaxException | ResourceException | ConfigException | RequestException e )
+    {
+      throw new ConnectionException( e );
+    }
   }
 
-  private IServer getP4Server( String password ) throws Exception
+  private IServer getP4Server( String password ) throws ConnectionException, ConfigException, NoSuchObjectException,
+      ResourceException, URISyntaxException, RequestException, AccessException
   {
     if ( null != _server )
     {
@@ -145,7 +151,8 @@ public class P4Wrapper
     _messages.clear();
   }
 
-  public void showServerInfo() throws Exception
+  public void showServerInfo() throws ConnectionException, RequestException,
+      AccessException
   {
     try
     {
