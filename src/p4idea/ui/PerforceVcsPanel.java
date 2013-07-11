@@ -1,10 +1,10 @@
 package p4idea.ui;
 
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.server.IServerInfo;
 import p4idea.P4Logger;
-import p4idea.PerforcePlugin;
 import p4idea.perforce.P4Settings;
 
 import javax.swing.*;
@@ -19,15 +19,18 @@ public class PerforceVcsPanel
   private JTextField _p4client;
   private JButton _testButton;
 
-  public PerforceVcsPanel()
+  private final Project _project;
+
+  public PerforceVcsPanel( Project project )
   {
+    _project = project;
     initialize();
     _testButton.addActionListener( new TestConnectionListener() );
   }
 
   public void initialize()
   {
-    P4Settings settings = PerforcePlugin.getInstance().getState();
+    P4Settings settings = _project.getComponent( P4Settings.class );
     _p4port.setText( settings.getP4port() );
     _p4user.setText( settings.getP4user() );
     _p4client.setText( settings.getP4client() );
@@ -40,7 +43,7 @@ public class PerforceVcsPanel
 
   public boolean isModified()
   {
-    P4Settings settings = PerforcePlugin.getInstance().getState();
+    P4Settings settings = _project.getComponent( P4Settings.class );
 
     boolean unmodified = _p4port.getText().equals( settings.getP4port() ) && _p4user.getText().equals( settings
         .getP4user() ) && _p4client.getText().equals( settings.getP4client() );
@@ -75,14 +78,14 @@ public class PerforceVcsPanel
         try
         {
           IServerInfo info = testSettings.verify();
-          UserInput.getInstance().displayPerforceInfo( _rootPanel, info );
+          UserInput.displayPerforceInfo( _rootPanel, info );
         }
         catch ( AccessException ae )
         {
-          IServerInfo info = UserInput.getInstance().requestCredentials( testSettings );
+          IServerInfo info = UserInput.requestCredentials( testSettings );
           if ( null != info )
           {
-            UserInput.getInstance().displayPerforceInfo( _rootPanel, info );
+            UserInput.displayPerforceInfo( _rootPanel, info );
           }
           else
           {

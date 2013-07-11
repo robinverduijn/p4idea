@@ -11,18 +11,7 @@ import java.net.URISyntaxException;
 
 public class UserInput
 {
-  private static final UserInput INSTANCE = new UserInput();
-
-  private UserInput()
-  {
-  }
-
-  public static final UserInput getInstance()
-  {
-    return INSTANCE;
-  }
-
-  public IServerInfo requestCredentials( final P4Settings settings )
+  public static IServerInfo requestCredentials( final P4Settings settings )
   {
     final String msg = String.format( "Perforce Password for User %s", settings.getP4user() );
     final String title = "Login to Perforce";
@@ -53,7 +42,7 @@ public class UserInput
     return null;
   }
 
-  public void displayPerforceInfo( JPanel panel, IServerInfo info )
+  public static void displayPerforceInfo( JPanel panel, IServerInfo info )
   {
     final String title = "Perforce Connection Successful";
     StringBuilder message = new StringBuilder();

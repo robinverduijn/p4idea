@@ -12,19 +12,6 @@ import java.util.*;
 
 public class P4WrapperTemp extends P4Wrapper
 {
-  public IChangelist createChangelist( String description ) throws P4JavaException
-  {
-    try
-    {
-      IClient client = getP4Server().getCurrentClient();
-      return CoreFactory.createChangelist( client, description, true );
-    }
-    finally
-    {
-      attemptDisconnect();
-    }
-  }
-
   public void revertChangelist( IChangelist changelist ) throws ConnectionException, RequestException,
       AccessException
   {
@@ -69,31 +56,6 @@ public class P4WrapperTemp extends P4Wrapper
     {
       IClient client = getP4Server().getCurrentClient();
       return client.addFiles( fileSpecs, false, changelist.getId(), null, false );
-    }
-    finally
-    {
-      attemptDisconnect();
-    }
-  }
-
-  public List<IFileSpec> openForEdit( IChangelist changelist, File file ) throws ConnectionException,
-      RequestException, AccessException
-  {
-    return openForEdit( changelist, Arrays.asList( file ) );
-  }
-
-  public List<IFileSpec> openForEdit( IChangelist changelist, List<File> files ) throws ConnectionException,
-      RequestException, AccessException
-  {
-    List<IFileSpec> fileSpecs = new ArrayList<>();
-    for ( File file : files )
-    {
-      fileSpecs.add( new FileSpec( file.getAbsolutePath() ) );
-    }
-    try
-    {
-      IClient client = getP4Server().getCurrentClient();
-      return client.editFiles( fileSpecs, false, false, changelist.getId(), null );
     }
     finally
     {

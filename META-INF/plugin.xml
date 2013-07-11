@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>net.rvd.idea.p4idea</id>
   <name>Perforce VCS Integration</name>
-  <version>0.3</version>
+  <version>0.4</version>
   <vendor email="robinverduijn.github@gmail.com" url="http://www.github.com">RVD</vendor>
 
   <description><![CDATA[
@@ -14,6 +14,7 @@
       <li>0.2: Basic plugin structure in place, settings are prompted for and persisted, P4 authentication working.
       <li>0.3: Proper integration in IDEA settings panel, first stubs for proper VCS provider implementation, get rid
                of old dialog-based configuration.
+      <li>0.4: Further flesh out proper VCS api, hook up first real P4Java calls, get rid of old crufty components.
       </ul>
       ]]>
   </change-notes>
@@ -33,8 +34,8 @@
 
   <project-components>
     <component>
-      <implementation-class>p4idea.PerforcePlugin</implementation-class>
-      <interface-class>p4idea.PerforcePlugin</interface-class>
+      <implementation-class>p4idea.perforce.P4Settings</implementation-class>
+      <interface-class>p4idea.perforce.P4Settings</interface-class>
     </component>
   </project-components>
 

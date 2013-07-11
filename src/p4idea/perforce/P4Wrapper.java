@@ -1,7 +1,12 @@
 package p4idea.perforce;
 
+import com.intellij.openapi.vfs.VirtualFile;
 import com.perforce.p4java.client.IClient;
+import com.perforce.p4java.core.CoreFactory;
+import com.perforce.p4java.core.IChangelist;
+import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
+import com.perforce.p4java.impl.generic.core.file.FileSpec;
 import com.perforce.p4java.server.*;
 import p4idea.P4Logger;
 
@@ -12,22 +17,23 @@ import java.util.List;
 
 public class P4Wrapper
 {
-  private static final P4Wrapper INSTANCE = new P4Wrapper();
-  protected List<String> _messages = new ArrayList<>();
+  private static final P4Wrapper P4 = new P4Wrapper();
+  protected final List<String> _messages = new ArrayList<>();
+  private final boolean _autoDisconnect;
   private IServer _server;
   private String _clientSpec;
   private String _p4port;
   private File _p4root;
   private String _username;
-  private boolean _autoDisconnect = false;
 
   P4Wrapper()
   {
+    _autoDisconnect = false;
   }
 
-  public static P4Wrapper getInstance()
+  public static P4Wrapper getP4()
   {
-    return INSTANCE;
+    return P4;
   }
 
   public P4Wrapper initialize( P4Settings settings ) throws ConnectionException, AccessException
@@ -177,5 +183,55 @@ public class P4Wrapper
     {
       attemptDisconnect();
     }
+  }
+
+  public IChangelist createChangelist( String description ) throws P4JavaException
+  {
+    try
+    {
+      IClient client = getP4Server().getCurrentClient();
+      return CoreFactory.createChangelist( client, description, true );
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
+  }
+
+  private IChangelist getDefaultChangelist() throws ConnectionException, AccessException, RequestException
+  {
+    return getP4Server().getChangelist( IChangelist.DEFAULT );
+  }
+
+  public List<IFileSpec> openForEdit( VirtualFile[] files ) throws P4JavaException
+  {
+    return openForEdit( getDefaultChangelist(), files );
+  }
+
+  public List<IFileSpec> openForEdit( IChangelist changelist, VirtualFile[] files ) throws ConnectionException,
+      RequestException, AccessException
+  {
+    P4Logger.getInstance().log( "Using changelist " + changelist.getId() + ": " + changelist.getDescription() );
+    List<IFileSpec> fileSpecs = fromVirtualFiles( files );
+    try
+    {
+      IClient client = getP4Server().getCurrentClient();
+      return client.editFiles( fileSpecs, false, false, changelist.getId(), null );
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
+  }
+
+  private List<IFileSpec> fromVirtualFiles( VirtualFile[] virtualFiles )
+  {
+    List<IFileSpec> fileSpecs = new ArrayList<>();
+    for ( VirtualFile virtualFile : virtualFiles )
+    {
+      P4Logger.getInstance().log( "File: " + virtualFile.getCanonicalPath() );
+      fileSpecs.add( new FileSpec( virtualFile.getCanonicalPath() ) );
+    }
+    return fileSpecs;
   }
 }

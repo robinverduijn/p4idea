@@ -1,11 +1,16 @@
 package p4idea.perforce;
 
+import com.intellij.openapi.components.*;
+import com.intellij.util.xmlb.XmlSerializerUtil;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.server.IServerInfo;
+import org.jetbrains.annotations.NotNull;
+import p4idea.P4Logger;
 
 import java.net.URISyntaxException;
 
-public class P4Settings
+@State( name = "P4Settings", storages = { @Storage( id = "default", file = StoragePathMacros.PROJECT_FILE ) } )
+public class P4Settings implements ProjectComponent, PersistentStateComponent<P4Settings>
 {
   private String _p4client;
   private String _p4port;
@@ -56,6 +61,59 @@ public class P4Settings
     return sb.toString();
   }
 
+  @Override
+  public void projectOpened()
+  {
+  }
+
+  @Override
+  public void projectClosed()
+  {
+  }
+
+  @Override
+  public void initComponent()
+  {
+  }
+
+  @Override
+  public void disposeComponent()
+  {
+  }
+
+  @NotNull
+  @Override
+  public String getComponentName()
+  {
+    return getClass().getName();
+  }
+
+  @NotNull
+  @Override
+  public P4Settings getState()
+  {
+    return this;
+  }
+
+  @Override
+  public void loadState( P4Settings settings )
+  {
+    if ( null == settings )
+    {
+      return;
+    }
+    XmlSerializerUtil.copyBean( settings, this );
+    P4Logger.getInstance().log( String.format( "%s", this ) );
+    try
+    {
+      P4Wrapper.getP4().initialize( this );
+    }
+    catch ( ConnectionException | AccessException e )
+    {
+      P4Logger.getInstance().error( String.format( "Invalid settings: %s", this ), e );
+    }
+  }
+
   public boolean isUnset()
   {
     return null == _p4port || null == _p4user || null == _p4client;
@@ -64,14 +122,14 @@ public class P4Settings
   public IServerInfo verify() throws ConnectionException, AccessException,
       RequestException
   {
-    P4Wrapper p4 = P4Wrapper.getInstance().initialize( this );
+    P4Wrapper p4 = P4Wrapper.getP4().initialize( this );
     return p4.showServerInfo();
   }
 
   public IServerInfo login( String password ) throws ConnectionException, AccessException, ConfigException,
       ResourceException, NoSuchObjectException, RequestException, URISyntaxException
   {
-    P4Wrapper p4 = P4Wrapper.getInstance().initialize( this );
+    P4Wrapper p4 = P4Wrapper.getP4().initialize( this );
     p4.login( password );
     return p4.showServerInfo();
   }

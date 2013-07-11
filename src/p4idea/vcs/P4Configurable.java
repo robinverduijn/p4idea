@@ -4,7 +4,7 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.*;
-import p4idea.PerforcePlugin;
+import p4idea.perforce.P4Settings;
 import p4idea.ui.PerforceVcsPanel;
 
 import javax.swing.*;
@@ -12,7 +12,7 @@ import javax.swing.*;
 public class P4Configurable implements Configurable
 {
   private PerforceVcsPanel _panel;
-  private Project _project;
+  private final Project _project;
 
   public P4Configurable( @NotNull Project project )
   {
@@ -37,7 +37,7 @@ public class P4Configurable implements Configurable
   @Override
   public JComponent createComponent()
   {
-    _panel = new PerforceVcsPanel();
+    _panel = new PerforceVcsPanel( _project );
     return _panel.getPanel();
   }
 
@@ -50,7 +50,7 @@ public class P4Configurable implements Configurable
   @Override
   public void apply() throws ConfigurationException
   {
-    _panel.apply( PerforcePlugin.getInstance().getState() );
+    _panel.apply( _project.getComponent( P4Settings.class ) );
   }
 
   @Override
