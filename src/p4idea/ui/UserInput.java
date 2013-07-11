@@ -1,10 +1,10 @@
-package net.rvd.idea.ui;
+package p4idea.ui;
 
 import com.intellij.openapi.ui.Messages;
 import com.perforce.p4java.exception.*;
-import net.rvd.idea.P4Logger;
-import net.rvd.idea.PerforcePlugin;
-import net.rvd.perforce.PluginSettings;
+import p4idea.P4Logger;
+import p4idea.PerforcePlugin;
+import p4idea.perforce.PluginSettings;
 
 import java.net.URISyntaxException;
 

@@ -1,9 +1,9 @@
-package net.rvd.perforce;
+package p4idea.perforce;
 
 import com.perforce.p4java.client.IClient;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.server.*;
-import net.rvd.idea.P4Logger;
+import p4idea.P4Logger;
 
 import java.io.File;
 import java.net.URISyntaxException;

@@ -31,20 +31,20 @@
 
   <project-components>
     <component>
-      <implementation-class>net.rvd.idea.PerforcePlugin</implementation-class>
-      <interface-class>net.rvd.idea.PerforcePlugin</interface-class>
+      <implementation-class>p4idea.PerforcePlugin</implementation-class>
+      <interface-class>p4idea.PerforcePlugin</interface-class>
     </component>
   </project-components>
 
   <actions>
     <group id="Perforce.Menu" text="Perforce" description="Perforce">
-      <action id="Perforce.Configuration" class="net.rvd.idea.ui.ConfigurationScreen" text="Configure Perforce" description="Configure Perforce">
+      <action id="Perforce.Configuration" class="p4idea.ui.ConfigurationScreen" text="Configure Perforce" description="Configure Perforce">
         <add-to-group group-id="VcsGroups" anchor="last"/>
       </action>
     </group>
   </actions>
 
   <extensions xmlns="com.intellij" defaultExtensionNs="com.intellij">
-    <vcs name="Perforce" vcsClass="net.rvd.idea.PerforceVcs"/>
+    <vcs name="Perforce" vcsClass="p4idea.vcs.PerforceVcs"/>
   </extensions>
 </idea-plugin>

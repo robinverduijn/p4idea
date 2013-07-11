@@ -1,4 +1,4 @@
-package net.rvd.test;
+package p4idea.test;
 
 public class Tester
 {

@@ -1,10 +1,11 @@
-package net.rvd.idea;
+package p4idea.vcs;
 
 import com.intellij.openapi.vfs.*;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConnectionException;
-import net.rvd.idea.ui.UserInput;
-import net.rvd.perforce.P4Wrapper;
+import p4idea.P4Logger;
+import p4idea.ui.UserInput;
+import p4idea.perforce.P4Wrapper;
 
 import java.io.File;
 

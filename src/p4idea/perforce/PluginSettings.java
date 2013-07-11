@@ -1,4 +1,4 @@
-package net.rvd.perforce;
+package p4idea.perforce;
 
 import com.perforce.p4java.exception.*;
 

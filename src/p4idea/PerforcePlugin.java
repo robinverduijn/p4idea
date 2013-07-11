@@ -1,12 +1,13 @@
-package net.rvd.idea;
+package p4idea;
 
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConnectionException;
-import net.rvd.perforce.P4Wrapper;
-import net.rvd.perforce.PluginSettings;
+import p4idea.perforce.P4Wrapper;
+import p4idea.perforce.PluginSettings;
 import org.jetbrains.annotations.NotNull;
+import p4idea.vcs.P4FileAdapter;
 
 @State( name = "PerforcePluginSettings", storages = { @Storage( id = "default", file = StoragePathMacros.PROJECT_FILE
 ) } )
