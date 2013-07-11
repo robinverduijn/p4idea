@@ -44,36 +44,46 @@ public class ConfigurationDialog extends AnAction
     }
     catch ( AccessException ae )
     {
-      final String msg = String.format( "Perforce Password for user %s", user );
-      String password = Messages.showPasswordDialog( project, msg, title, null );
-      try
-      {
-        settings.login( password );
-      }
-      catch ( ConnectionException | RequestException e )
-      {
-        final String error = "Error connecting to Perforce";
-        PluginLogger.error( error, e );
-        Messages.showErrorDialog( e.getMessage(), error );
-      }
-      catch ( AccessException e )
-      {
-        final String error = "Invalid credentials";
-        PluginLogger.error( error, e );
-        Messages.showErrorDialog( e.getMessage(), error );
-      }
-      catch ( ConfigException | ResourceException | NoSuchObjectException | URISyntaxException e )
-      {
-        final String error = "Perforce server error";
-        PluginLogger.error( error, e );
-        Messages.showErrorDialog( e.getMessage(), error );
-      }
+      requestCredentials();
     }
     catch ( ConnectionException | RequestException e )
     {
       PluginLogger.error( "", e );
       Messages.showErrorDialog( e.getMessage(), "Error connecting to Perforce" );
     }
+  }
+
+  public static boolean requestCredentials()
+  {
+    PluginSettings settings = PerforcePlugin.getInstance().getState();
+
+    final String msg = String.format( "Perforce Password for user %s", settings.getP4user() );
+    final String title = "Login to Perforce";
+    String password = Messages.showPasswordDialog( msg, title );
+    try
+    {
+      settings.login( password );
+      return true;
+    }
+    catch ( ConnectionException | RequestException e )
+    {
+      final String error = "Error connecting to Perforce";
+      PluginLogger.error( error, e );
+      Messages.showErrorDialog( e.getMessage(), error );
+    }
+    catch ( AccessException e )
+    {
+      final String error = String.format( "Invalid credentials for user %s", settings.getP4user() );
+      PluginLogger.error( error, e );
+      Messages.showErrorDialog( e.getMessage(), error );
+    }
+    catch ( ConfigException | ResourceException | NoSuchObjectException | URISyntaxException e )
+    {
+      final String error = "Perforce server error";
+      PluginLogger.error( error, e );
+      Messages.showErrorDialog( e.getMessage(), error );
+    }
+    return false;
   }
 
   private boolean isEmpty( String text )

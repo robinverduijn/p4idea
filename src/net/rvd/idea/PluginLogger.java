@@ -26,9 +26,19 @@ public class PluginLogger
     {
       error( "Error connecting to Perforce", e );
     }
-    catch ( AccessException e )
+    catch ( AccessException ae )
     {
-      error( "Invalid credentials", e );
+      if ( !ConfigurationDialog.requestCredentials() )
+      {
+        try
+        {
+          P4Wrapper.getInstance().disconnect();
+        }
+        catch ( ConnectionException | AccessException e )
+        {
+          error( "Error disconnecting from Perforce", e );
+        }
+      }
     }
     return result;
   }
@@ -50,13 +60,11 @@ public class PluginLogger
 
   public static void log( String message )
   {
-    System.out.println( message );
     Logger.getInstance( "PerforcePlugin" ).info( message );
   }
 
   public static void error( String message, Throwable t )
   {
-    log( message );
     PluginManager.getLogger().error( message, t );
   }
 }
