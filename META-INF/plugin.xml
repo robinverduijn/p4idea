@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>net.rvd.idea.p4idea</id>
   <name>Perforce VCS Integration</name>
-  <version>0.4</version>
+  <version>0.5</version>
   <vendor email="robinverduijn.github@gmail.com" url="http://www.github.com">RVD</vendor>
 
   <description><![CDATA[
@@ -15,6 +15,8 @@
       <li>0.3: Proper integration in IDEA settings panel, first stubs for proper VCS provider implementation, get rid
                of old dialog-based configuration.
       <li>0.4: Further flesh out proper VCS api, hook up first real P4Java calls, get rid of old crufty components.
+      <li>0.5: First fully working implementation of open-for-edit. Fundamentals are now basically solid for further
+               feature development.
       </ul>
       ]]>
   </change-notes>
