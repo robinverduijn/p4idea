@@ -1,5 +1,6 @@
 package p4idea.ui;
 
+import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
 import com.perforce.p4java.exception.*;
@@ -13,18 +14,16 @@ import java.awt.event.ActionListener;
 
 public class PerforceVcsPanel
 {
+  private final Project _project;
   private JPanel _rootPanel;
   private JTextField _p4port;
   private JTextField _p4user;
   private JTextField _p4client;
   private JButton _testButton;
 
-  private final Project _project;
-
   public PerforceVcsPanel( Project project )
   {
     _project = project;
-    initialize();
     _testButton.addActionListener( new TestConnectionListener() );
   }
 
@@ -45,16 +44,76 @@ public class PerforceVcsPanel
   {
     P4Settings settings = _project.getComponent( P4Settings.class );
 
-    boolean unmodified = _p4port.getText().equals( settings.getP4port() ) && _p4user.getText().equals( settings
-        .getP4user() ) && _p4client.getText().equals( settings.getP4client() );
+    boolean unmodified = _p4port.getText().equals( settings.getP4port() );
+    unmodified &= _p4user.getText().equals( settings.getP4user() );
+    unmodified &= _p4client.getText().equals( settings.getP4client() );
     return !unmodified;
   }
 
-  public void apply( P4Settings settings )
+  public void apply( P4Settings settings ) throws ConfigurationException
   {
+    apply( settings, false );
+  }
+
+  private void apply( P4Settings settings, boolean verbose ) throws ConfigurationException
+  {
+    P4Settings current = P4Settings.clone( settings );
+
     settings.setP4port( _p4port.getText() );
     settings.setP4user( _p4user.getText() );
     settings.setP4client( _p4client.getText() );
+    try
+    {
+      testSettings( settings, verbose );
+      settings.apply();
+    }
+    catch ( ConfigurationException e )
+    {
+      settings.loadState( current );
+      throw e;
+    }
+  }
+
+  private void testSettings( P4Settings settings, boolean verbose ) throws ConfigurationException
+  {
+    if ( settings.isUnset() )
+    {
+      final String title = "Error Connecting to Perforce";
+      final String error = String.format( "Incomplete Perforce Settings: %s", settings );
+      Messages.showErrorDialog( error, title );
+      throw new ConfigurationException( error );
+    }
+
+    try
+    {
+      try
+      {
+        IServerInfo info = settings.verify();
+        if ( verbose )
+        {
+          UserInput.displayPerforceInfo( _rootPanel, info );
+        }
+      }
+      catch ( AccessException ae )
+      {
+        IServerInfo info = UserInput.requestCredentials( settings );
+        if ( null != info )
+        {
+          UserInput.displayPerforceInfo( _rootPanel, info );
+        }
+        else
+        {
+          throw ae;
+        }
+      }
+    }
+    catch ( AccessException | ConnectionException | RequestException e )
+    {
+      final String msg = "Error Connecting to Perforce";
+      P4Logger.getInstance().error( msg, e );
+      Messages.showErrorDialog( e.getMessage(), msg );
+      throw new ConfigurationException( msg );
+    }
   }
 
   private class TestConnectionListener implements ActionListener
@@ -63,41 +122,13 @@ public class PerforceVcsPanel
     public void actionPerformed( ActionEvent event )
     {
       P4Settings testSettings = new P4Settings();
-      apply( testSettings );
-
-      if ( testSettings.isUnset() )
-      {
-        final String title = "Error Connecting to Perforce";
-        final String error = String.format( "Incomplete Perforce Settings: %s", testSettings );
-        Messages.showErrorDialog( error, title );
-        return;
-      }
-
       try
       {
-        try
-        {
-          IServerInfo info = testSettings.verify();
-          UserInput.displayPerforceInfo( _rootPanel, info );
-        }
-        catch ( AccessException ae )
-        {
-          IServerInfo info = UserInput.requestCredentials( testSettings );
-          if ( null != info )
-          {
-            UserInput.displayPerforceInfo( _rootPanel, info );
-          }
-          else
-          {
-            throw ae;
-          }
-        }
+        apply( testSettings, true );
       }
-      catch ( AccessException | ConnectionException | RequestException e )
+      catch ( ConfigurationException e )
       {
-        final String msg = "Error Connecting to Perforce";
-        P4Logger.getInstance().error( msg, e );
-        Messages.showErrorDialog( e.getMessage(), msg );
+        // Already logged
       }
     }
   }

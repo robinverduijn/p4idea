@@ -122,29 +122,7 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
   @Override
   public VcsType getType()
   {
-    log( "getType()" );
-    return super.getType();
-  }
-
-  @Override
-  protected void shutdown() throws VcsException
-  {
-    log( "shutdown()" );
-    super.shutdown();
-  }
-
-  @Override
-  protected void start() throws VcsException
-  {
-    log( "start()" );
-    super.start();
-  }
-
-  @Override
-  protected void activate()
-  {
-    log( "activate()" );
-    super.activate();
+    return VcsType.centralized;
   }
 
   @Override
@@ -157,7 +135,6 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
   @Override
   protected void deactivate()
   {
-    log( "deactivate()" );
     try
     {
       P4Wrapper.getP4().disconnect();

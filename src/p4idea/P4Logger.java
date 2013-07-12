@@ -1,6 +1,5 @@
 package p4idea;
 
-import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.diagnostic.Logger;
 
 public class P4Logger

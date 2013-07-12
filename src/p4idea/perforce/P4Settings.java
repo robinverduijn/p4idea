@@ -16,6 +16,13 @@ public class P4Settings implements ProjectComponent, PersistentStateComponent<P4
   private String _p4port;
   private String _p4user;
 
+  public static P4Settings clone( P4Settings settings )
+  {
+    P4Settings result = new P4Settings();
+    XmlSerializerUtil.copyBean( settings, result );
+    return result;
+  }
+
   public String getP4client()
   {
     return _p4client;
@@ -103,7 +110,15 @@ public class P4Settings implements ProjectComponent, PersistentStateComponent<P4
       return;
     }
     XmlSerializerUtil.copyBean( settings, this );
-    P4Logger.getInstance().log( String.format( "%s", this ) );
+    if ( !isUnset() )
+    {
+      P4Logger.getInstance().log( String.format( "%s", this ) );
+      apply();
+    }
+  }
+
+  public void apply()
+  {
     try
     {
       P4Wrapper.getP4().initialize( this );
@@ -116,7 +131,12 @@ public class P4Settings implements ProjectComponent, PersistentStateComponent<P4
 
   public boolean isUnset()
   {
-    return null == _p4port || null == _p4user || null == _p4client;
+    return isEmpty( _p4port ) || isEmpty( _p4user ) || isEmpty( _p4client );
+  }
+
+  private boolean isEmpty( String text )
+  {
+    return null == text || text.trim().isEmpty();
   }
 
   public IServerInfo verify() throws ConnectionException, AccessException,
