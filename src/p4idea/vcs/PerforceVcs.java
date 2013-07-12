@@ -56,8 +56,12 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
 
     final VirtualFile virtualFile = filePath.getVirtualFile();
     final FileStatus fileStatus = FileStatusManager.getInstance( myProject ).getStatus( virtualFile );
-    log( String.format( "fileExistsInVcs(): file status for %s: %s", filePath.getPresentableUrl(), fileStatus ) );
-    return fileStatus != FileStatus.UNKNOWN && fileStatus != FileStatus.ADDED;
+    boolean alreadyExists = fileStatus != FileStatus.UNKNOWN && fileStatus != FileStatus.ADDED;
+    if ( !alreadyExists )
+    {
+      log( String.format( "fileExistsInVcs(): file status for %s: %s", filePath.getPresentableUrl(), fileStatus ) );
+    }
+    return alreadyExists;
   }
 
   @Override

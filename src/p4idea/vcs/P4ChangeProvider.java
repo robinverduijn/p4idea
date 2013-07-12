@@ -20,8 +20,8 @@ public class P4ChangeProvider implements ChangeProvider
   @Override
   public boolean isModifiedDocumentTrackingRequired()
   {
-    P4Logger.getInstance().log( "getChanges()" );
-    return false;
+    // Used by VcsDirtyScopeManager in core platform code
+    return true;
   }
 
   @Override
