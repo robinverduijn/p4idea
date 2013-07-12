@@ -5,6 +5,7 @@ import com.perforce.p4java.exception.*;
 import com.perforce.p4java.server.IServerInfo;
 import p4idea.P4Logger;
 import p4idea.perforce.P4Settings;
+import p4idea.perforce.P4Wrapper;
 
 import javax.swing.*;
 import java.net.URISyntaxException;
@@ -17,9 +18,11 @@ public class UserInput
     final String title = "Login to Perforce";
 
     String password = Messages.showPasswordDialog( msg, title );
+
+    IServerInfo result = null;
     try
     {
-      return settings.login( password );
+      result = settings.login( password );
     }
     catch ( ConnectionException | RequestException e )
     {
@@ -39,7 +42,19 @@ public class UserInput
       P4Logger.getInstance().error( error, e );
       Messages.showErrorDialog( e.getMessage(), error );
     }
-    return null;
+
+    if ( null == result )
+    {
+      try
+      {
+        P4Wrapper.getP4().disconnect();
+      }
+      catch ( ConnectionException | AccessException e )
+      {
+        P4Logger.getInstance().error( "Error disconnecting from Perforce", e );
+      }
+    }
+    return result;
   }
 
   public static void displayPerforceInfo( JPanel panel, IServerInfo info )

@@ -2,12 +2,12 @@ package p4idea.perforce;
 
 import com.intellij.openapi.vfs.VirtualFile;
 import com.perforce.p4java.client.IClient;
-import com.perforce.p4java.core.CoreFactory;
-import com.perforce.p4java.core.IChangelist;
+import com.perforce.p4java.core.file.FileSpecOpStatus;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.impl.generic.core.file.FileSpec;
 import com.perforce.p4java.server.*;
+import org.jetbrains.annotations.NotNull;
 import p4idea.P4Logger;
 
 import java.io.File;
@@ -122,7 +122,7 @@ public class P4Wrapper
     }
   }
 
-  public File getP4Root() throws ConnectionException, AccessException
+  private File getP4Root() throws ConnectionException, AccessException
   {
     if ( null == _p4root )
     {
@@ -133,6 +133,20 @@ public class P4Wrapper
       }
     }
     return _p4root;
+  }
+
+  public boolean isValidMapping( @NotNull String path ) throws ConnectionException, AccessException
+  {
+    try
+    {
+      File root = getP4Root();
+      String filePath = new File( path ).getAbsolutePath();
+      return null != root && filePath.startsWith( root.getAbsolutePath() );
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
   }
 
   public void login( String password ) throws ConnectionException, RequestException, URISyntaxException,
@@ -155,6 +169,42 @@ public class P4Wrapper
       P4Logger.getInstance().log( "P4: " + message );
     }
     _messages.clear();
+  }
+
+  protected List<IFileSpec> fromVirtualFiles( VirtualFile[] virtualFiles )
+  {
+    List<IFileSpec> fileSpecs = new ArrayList<>();
+    for ( VirtualFile virtualFile : virtualFiles )
+    {
+      fileSpecs.add( new FileSpec( virtualFile.getCanonicalPath() ) );
+    }
+    return fileSpecs;
+  }
+
+  private List<IFileSpec> processResults( List<IFileSpec> files )
+  {
+    for ( IFileSpec file : files )
+    {
+      if ( file != null )
+      {
+        final String msg;
+
+        FileSpecOpStatus status = file.getOpStatus();
+        if ( status != FileSpecOpStatus.VALID )
+        {
+          msg = String.format( "%s: %s", status, file.getStatusMessage() );
+        }
+        else
+        {
+          msg = file.getStatusMessage();
+        }
+        if ( null != msg )
+        {
+          _messages.add( msg );
+        }
+      }
+    }
+    return files;
   }
 
   public IServerInfo showServerInfo() throws ConnectionException, RequestException, AccessException
@@ -191,22 +241,11 @@ public class P4Wrapper
     try
     {
       IClient client = getP4Server().getCurrentClient();
-      return client.editFiles( fileSpecs, false, false, -1, null );
+      return processResults( client.editFiles( fileSpecs, false, false, -1, null ) );
     }
     finally
     {
       attemptDisconnect();
     }
-  }
-
-  protected List<IFileSpec> fromVirtualFiles( VirtualFile[] virtualFiles )
-  {
-    List<IFileSpec> fileSpecs = new ArrayList<>();
-    for ( VirtualFile virtualFile : virtualFiles )
-    {
-      P4Logger.getInstance().log( "File: " + virtualFile.getCanonicalPath() );
-      fileSpecs.add( new FileSpec( virtualFile.getCanonicalPath() ) );
-    }
-    return fileSpecs;
   }
 }

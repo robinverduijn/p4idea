@@ -29,7 +29,7 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
 
     _configurable = new P4Configurable( project );
     _changeProvider = new P4ChangeProvider();
-    _rootChecker = new P4RootChecker( project );
+    _rootChecker = new P4RootChecker();
     _editFileProvider = new P4EditFileProvider();
   }
 
@@ -47,25 +47,30 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
   }
 
   @Override
-  public boolean fileExistsInVcs( FilePath path )
+  public boolean fileExistsInVcs( FilePath filePath )
   {
-    log( "fileExistsInVcs(): " + path.getPresentableUrl() );
-    final VirtualFile virtualFile = path.getVirtualFile();
-    if ( virtualFile != null )
+    if ( !fileIsUnderVcs( filePath ) )
     {
-      final FileStatus fileStatus = FileStatusManager.getInstance( myProject ).getStatus( virtualFile );
-      P4Logger.getInstance().log( "File status: " + fileStatus );
-      return fileStatus != FileStatus.UNKNOWN && fileStatus != FileStatus.ADDED;
+      return false;
     }
-    P4Logger.getInstance().log( "VirtualFile was null" );
-    return true;
+
+    final VirtualFile virtualFile = filePath.getVirtualFile();
+    final FileStatus fileStatus = FileStatusManager.getInstance( myProject ).getStatus( virtualFile );
+    log( String.format( "fileExistsInVcs(): file status for %s: %s", filePath.getPresentableUrl(), fileStatus ) );
+    return fileStatus != FileStatus.UNKNOWN && fileStatus != FileStatus.ADDED;
   }
 
   @Override
   public boolean fileIsUnderVcs( FilePath filePath )
   {
-    log( "fileIsUnderVcs: " + filePath.getPresentableUrl() );
-    return super.fileIsUnderVcs( filePath );
+    final VirtualFile virtualFile = filePath.getVirtualFile();
+    if ( virtualFile == null )
+    {
+      return false;
+    }
+
+    String path = virtualFile.getCanonicalPath();
+    return null != path && !_rootChecker.isInvalidMapping( path );
   }
 
   @Nullable
@@ -105,13 +110,6 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
     return super.getEditHandler();
   }
 
-  @Override
-  public boolean isTrackingUnchangedContent()
-  {
-    log( "isTrackingUnchangedContent()" );
-    return super.isTrackingUnchangedContent();
-  }
-
   @Nullable
   @Override
   public VcsRootChecker getRootChecker()
@@ -128,7 +126,6 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
   @Override
   public boolean areDirectoriesVersionedItems()
   {
-    log( "areDirectoriesVersionedItems()" );
     return false;
   }
 
