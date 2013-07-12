@@ -48,32 +48,6 @@ public class P4Wrapper
     return this;
   }
 
-  public File getP4Root() throws ConnectionException, AccessException
-  {
-    if ( null == _p4root )
-    {
-      IClient client = getP4Server().getCurrentClient();
-      if ( null != client )
-      {
-        _p4root = new File( client.getRoot() );
-      }
-    }
-    return _p4root;
-  }
-
-  public void login( String password ) throws ConnectionException, RequestException, URISyntaxException,
-      ResourceException, AccessException, ConfigException, NoSuchObjectException
-  {
-    try
-    {
-      getP4Server( password );
-    }
-    finally
-    {
-      attemptDisconnect();
-    }
-  }
-
   /**
    * Returns a Perforce server connection for the Perforce server. The connection will not be authenticated unless an
    * (optional null) password is specified. The caller is responsible for calling {@link IServer#disconnect()} on the
@@ -148,6 +122,32 @@ public class P4Wrapper
     }
   }
 
+  public File getP4Root() throws ConnectionException, AccessException
+  {
+    if ( null == _p4root )
+    {
+      IClient client = getP4Server().getCurrentClient();
+      if ( null != client )
+      {
+        _p4root = new File( client.getRoot() );
+      }
+    }
+    return _p4root;
+  }
+
+  public void login( String password ) throws ConnectionException, RequestException, URISyntaxException,
+      ResourceException, AccessException, ConfigException, NoSuchObjectException
+  {
+    try
+    {
+      getP4Server( password );
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
+  }
+
   private void flushMessages()
   {
     for ( String message : _messages )
@@ -185,24 +185,6 @@ public class P4Wrapper
     }
   }
 
-  public IChangelist createChangelist( String description ) throws P4JavaException
-  {
-    try
-    {
-      IClient client = getP4Server().getCurrentClient();
-      return CoreFactory.createChangelist( client, description, true );
-    }
-    finally
-    {
-      attemptDisconnect();
-    }
-  }
-
-  private IChangelist getDefaultChangelist() throws ConnectionException, AccessException, RequestException
-  {
-    return getP4Server().getChangelist( IChangelist.DEFAULT );
-  }
-
   public List<IFileSpec> openForEdit( VirtualFile[] files ) throws P4JavaException
   {
     List<IFileSpec> fileSpecs = fromVirtualFiles( files );
@@ -217,22 +199,7 @@ public class P4Wrapper
     }
   }
 
-  private List<IFileSpec> openForEdit( IChangelist changelist, VirtualFile[] files ) throws ConnectionException,
-      RequestException, AccessException
-  {
-    List<IFileSpec> fileSpecs = fromVirtualFiles( files );
-    try
-    {
-      IClient client = getP4Server().getCurrentClient();
-      return client.editFiles( fileSpecs, false, false, changelist.getId(), null );
-    }
-    finally
-    {
-      attemptDisconnect();
-    }
-  }
-
-  private List<IFileSpec> fromVirtualFiles( VirtualFile[] virtualFiles )
+  protected List<IFileSpec> fromVirtualFiles( VirtualFile[] virtualFiles )
   {
     List<IFileSpec> fileSpecs = new ArrayList<>();
     for ( VirtualFile virtualFile : virtualFiles )

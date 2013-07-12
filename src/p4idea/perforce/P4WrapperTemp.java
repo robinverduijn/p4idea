@@ -1,5 +1,6 @@
 package p4idea.perforce;
 
+import com.intellij.openapi.vfs.VirtualFile;
 import com.perforce.p4java.client.IClient;
 import com.perforce.p4java.core.*;
 import com.perforce.p4java.core.file.IFileSpec;
@@ -12,6 +13,24 @@ import java.util.*;
 
 public class P4WrapperTemp extends P4Wrapper
 {
+  public IChangelist createChangelist( String description ) throws P4JavaException
+  {
+    try
+    {
+      IClient client = getP4Server().getCurrentClient();
+      return CoreFactory.createChangelist( client, description, true );
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
+  }
+
+  private IChangelist getDefaultChangelist() throws ConnectionException, AccessException, RequestException
+  {
+    return getP4Server().getChangelist( IChangelist.DEFAULT );
+  }
+
   public void revertChangelist( IChangelist changelist ) throws ConnectionException, RequestException,
       AccessException
   {
@@ -37,6 +56,21 @@ public class P4WrapperTemp extends P4Wrapper
     try
     {
       changelist.submit( false );
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
+  }
+
+  public List<IFileSpec> openForEdit( IChangelist changelist, VirtualFile[] files ) throws ConnectionException,
+      RequestException, AccessException
+  {
+    List<IFileSpec> fileSpecs = fromVirtualFiles( files );
+    try
+    {
+      IClient client = getP4Server().getCurrentClient();
+      return client.editFiles( fileSpecs, false, false, changelist.getId(), null );
     }
     finally
     {
