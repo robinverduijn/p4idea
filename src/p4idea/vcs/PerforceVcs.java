@@ -14,16 +14,18 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import p4idea.P4Logger;
 import p4idea.perforce.P4Wrapper;
+import p4idea.ui.P4SettingsValidator;
 
 public class PerforceVcs extends AbstractVcs<CommittedChangeList>
 {
   public static final String NAME = "Perforce";
   private static final VcsKey KEY = AbstractVcs.createKey( NAME );
-
+  public static PerforceVcs Instance;
   private final P4Configurable _configurable;
   private final P4ChangeProvider _changeProvider;
   private final P4RootChecker _rootChecker;
   private final P4EditFileProvider _editFileProvider;
+  private final P4SettingsValidator _validator;
 
   public PerforceVcs( @NotNull Project project )
   {
@@ -33,6 +35,13 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
     _changeProvider = new P4ChangeProvider( project );
     _rootChecker = new P4RootChecker();
     _editFileProvider = new P4EditFileProvider();
+    _validator = new P4SettingsValidator( project );
+    Instance = this;
+  }
+
+  public static VcsKey getKey()
+  {
+    return KEY;
   }
 
   @Override
@@ -41,9 +50,10 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
     return NAME;
   }
 
-  public static VcsKey getKey()
+  @NotNull
+  public P4SettingsValidator getValidator()
   {
-    return KEY;
+    return _validator;
   }
 
   @NotNull

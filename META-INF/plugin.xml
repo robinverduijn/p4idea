@@ -54,5 +54,7 @@
 
   <extensions xmlns="com.intellij" defaultExtensionNs="com.intellij">
     <vcs name="Perforce" vcsClass="p4idea.vcs.PerforceVcs" displayName="Perforce" administrativeAreaName=".p4"/>
+
+    <projectService serviceInterface="p4idea.ui.P4SettingsValidator" serviceImplementation="p4idea.ui.P4SettingsValidator"/>
   </extensions>
 </idea-plugin>

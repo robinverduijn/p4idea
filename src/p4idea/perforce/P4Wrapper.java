@@ -2,6 +2,7 @@ package p4idea.perforce;
 
 import com.google.common.collect.Lists;
 import com.intellij.openapi.vcs.FilePath;
+import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.perforce.p4java.client.IClient;
 import com.perforce.p4java.core.file.FileSpecOpStatus;
@@ -11,6 +12,7 @@ import com.perforce.p4java.impl.generic.core.file.FileSpec;
 import com.perforce.p4java.server.*;
 import org.jetbrains.annotations.NotNull;
 import p4idea.P4Logger;
+import p4idea.vcs.PerforceVcs;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -24,10 +26,8 @@ public class P4Wrapper
   private final boolean _autoDisconnect;
   private final boolean _verboseErrors;
   private IServer _server;
-  private String _clientSpec;
-  private String _p4port;
+  private P4Settings _settings;
   private File _p4root;
-  private String _username;
 
   P4Wrapper()
   {
@@ -44,10 +44,8 @@ public class P4Wrapper
   {
     disconnect();
 
-    _clientSpec = settings.getP4client();
-    _p4port = settings.getP4port();
     _p4root = null;
-    _username = settings.getP4user();
+    _settings = settings;
 
     return this;
   }
@@ -76,8 +74,12 @@ public class P4Wrapper
     {
       return _server;
     }
-    _server = ServerFactory.getServer( String.format( "p4java://%s", _p4port ), null );
-    _server.setUserName( _username );
+    if ( null == _settings || _settings.isUnset() )
+    {
+      throw new ConfigException( "P4 server settings not set" );
+    }
+    _server = ServerFactory.getServer( String.format( "p4java://%s", _settings.getP4port() ), null );
+    _server.setUserName( _settings.getP4user() );
 
     _server.connect();
 
@@ -87,9 +89,9 @@ public class P4Wrapper
       _server.login( password );
     }
 
-    if ( null != _clientSpec )
+    if ( null != _settings.getP4client() )
     {
-      IClient client = _server.getClient( _clientSpec );
+      IClient client = _server.getClient( _settings.getP4client() );
       _server.setCurrentClient( client );
     }
 
@@ -130,7 +132,7 @@ public class P4Wrapper
   {
     if ( null == _p4root )
     {
-      IClient client = getP4Server().getCurrentClient();
+      IClient client = getCurrentClient();
       if ( null != client )
       {
         _p4root = new File( client.getRoot() );
@@ -234,6 +236,28 @@ public class P4Wrapper
     }
   }
 
+  private IClient getCurrentClient() throws ConnectionException, AccessException
+  {
+    IClient client = getP4Server().getCurrentClient();
+    if ( null == client )
+    {
+      if ( !PerforceVcs.Instance.getValidator().checkExecutableAndNotifyIfNeeded() )
+      {
+        throw new AccessException( "Unable to connect to Perforce" );
+      }
+    }
+    return client;
+  }
+
+  public void handleP4Exception( P4JavaException e ) throws VcsException
+  {
+    if ( PerforceVcs.Instance.getValidator().checkExecutableAndNotifyIfNeeded() )
+    {
+      return;
+    }
+    throw new VcsException( e );
+  }
+
   public IServerInfo showServerInfo() throws ConnectionException, RequestException, AccessException
   {
     try
@@ -267,7 +291,7 @@ public class P4Wrapper
     List<IFileSpec> fileSpecs = fromVirtualFiles( files );
     try
     {
-      IClient client = getP4Server().getCurrentClient();
+      IClient client = getCurrentClient();
       return processResults( client.editFiles( fileSpecs, false, false, -1, null ) );
     }
     finally
@@ -282,7 +306,7 @@ public class P4Wrapper
     List<IFileSpec> fileSpecs = fromFilePaths( files );
     try
     {
-      IClient client = getP4Server().getCurrentClient();
+      IClient client = getCurrentClient();
       return processResults( client.addFiles( fileSpecs, false, -1, null, false ) );
     }
     finally
@@ -297,7 +321,7 @@ public class P4Wrapper
     List<IFileSpec> fileSpecs = fromFilePaths( files );
     try
     {
-      IClient client = getP4Server().getCurrentClient();
+      IClient client = getCurrentClient();
       return processResults( client.deleteFiles( fileSpecs, -1, false ) );
     }
     finally
@@ -312,7 +336,7 @@ public class P4Wrapper
     try
     {
       //return processResults( getP4Server().getOpenedFiles( fileSpecs, false, _clientSpec, -1, -1 ) );
-      IClient client = getP4Server().getCurrentClient();
+      IClient client = getCurrentClient();
       return client.haveList( fileSpecs );
     }
     finally
@@ -327,13 +351,30 @@ public class P4Wrapper
     List<IFileSpec> fileSpecs = fromFilePaths( files );
     try
     {
-      IClient client = getP4Server().getCurrentClient();
+      IClient client = getCurrentClient();
       List<IFileSpec> revertedFiles = client.revertFiles( fileSpecs, false, -1, false, false );
       if ( quiet )
       {
         return revertedFiles;
       }
       return processResults( revertedFiles );
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
+  }
+
+  public boolean checkValidCredentials() throws ConnectionException, AccessException
+  {
+    try
+    {
+      getP4Server().getDepots();
+      return true;
+    }
+    catch ( ConnectionException | AccessException | RequestException e )
+    {
+      return false;
     }
     finally
     {

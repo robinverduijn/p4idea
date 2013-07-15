@@ -29,7 +29,7 @@ public class P4EditFileProvider implements EditFileProvider
     }
     catch ( P4JavaException e )
     {
-      throw new VcsException( e );
+      P4Wrapper.getP4().handleP4Exception( e );
     }
   }
 

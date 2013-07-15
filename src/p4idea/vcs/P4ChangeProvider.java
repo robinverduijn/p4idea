@@ -117,7 +117,8 @@ public class P4ChangeProvider implements ChangeProvider
     }
     catch ( P4JavaException e )
     {
-      throw new VcsException( e );
+      P4Wrapper.getP4().handleP4Exception( e );
+      return changes;
     }
   }
 
@@ -201,7 +202,7 @@ public class P4ChangeProvider implements ChangeProvider
     }
     catch ( P4JavaException e )
     {
-      throw new VcsException( e );
+      P4Wrapper.getP4().handleP4Exception( e );
     }
   }
 
@@ -227,7 +228,7 @@ public class P4ChangeProvider implements ChangeProvider
     }
     catch ( P4JavaException e )
     {
-      throw new VcsException( e );
+      P4Wrapper.getP4().handleP4Exception( e );
     }
   }
 
@@ -255,7 +256,7 @@ public class P4ChangeProvider implements ChangeProvider
     }
     catch ( P4JavaException e )
     {
-      throw new VcsException( e );
+      P4Wrapper.getP4().handleP4Exception( e );
     }
   }
 
