@@ -30,7 +30,7 @@ public class P4RootChecker implements VcsRootChecker
   {
     try
     {
-      return !P4Wrapper.getP4().isValidMapping( path );
+      return P4Wrapper.getP4().isInvalidMapping( path );
     }
     catch ( ConnectionException | AccessException e )
     {

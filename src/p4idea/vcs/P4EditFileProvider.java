@@ -8,7 +8,7 @@ import com.perforce.p4java.exception.P4JavaException;
 import p4idea.P4Logger;
 import p4idea.perforce.P4Wrapper;
 
-import java.util.List;
+import java.util.Collection;
 
 public class P4EditFileProvider implements EditFileProvider
 {
@@ -17,13 +17,12 @@ public class P4EditFileProvider implements EditFileProvider
   {
     try
     {
-      List<IFileSpec> opened = P4Wrapper.getP4().openForEdit( files );
+      Collection<IFileSpec> opened = P4Wrapper.getP4().openForEdit( files );
       for ( IFileSpec file : opened )
       {
         String path = file.getClientPathString();
         if ( null != path )
         {
-          P4Logger.getInstance().log( "Opened for edit: " + path );
           // TODO: do something with this, perhaps VcsChangeProvider? Update file status?
         }
       }

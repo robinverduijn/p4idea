@@ -18,6 +18,8 @@ import p4idea.perforce.P4Wrapper;
 public class PerforceVcs extends AbstractVcs<CommittedChangeList>
 {
   public static final String NAME = "Perforce";
+  private static final VcsKey KEY = AbstractVcs.createKey( NAME );
+
   private final P4Configurable _configurable;
   private final P4ChangeProvider _changeProvider;
   private final P4RootChecker _rootChecker;
@@ -28,7 +30,7 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
     super( project, NAME );
 
     _configurable = new P4Configurable( project );
-    _changeProvider = new P4ChangeProvider();
+    _changeProvider = new P4ChangeProvider( project );
     _rootChecker = new P4RootChecker();
     _editFileProvider = new P4EditFileProvider();
   }
@@ -37,6 +39,11 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
   public String getDisplayName()
   {
     return NAME;
+  }
+
+  public static VcsKey getKey()
+  {
+    return KEY;
   }
 
   @NotNull
@@ -59,7 +66,7 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
     boolean alreadyExists = fileStatus != FileStatus.UNKNOWN && fileStatus != FileStatus.ADDED;
     if ( !alreadyExists )
     {
-      log( String.format( "fileExistsInVcs(): file status for %s: %s", filePath.getPresentableUrl(), fileStatus ) );
+      log( String.format( "fileExistsInVcs(): file status for %s: %s", filePath.getPath(), fileStatus ) );
     }
     return alreadyExists;
   }

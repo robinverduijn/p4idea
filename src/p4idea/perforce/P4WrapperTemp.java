@@ -1,6 +1,6 @@
 package p4idea.perforce;
 
-import com.intellij.openapi.vfs.VirtualFile;
+import com.google.common.collect.Lists;
 import com.perforce.p4java.client.IClient;
 import com.perforce.p4java.core.*;
 import com.perforce.p4java.core.file.IFileSpec;
@@ -8,8 +8,8 @@ import com.perforce.p4java.exception.*;
 import com.perforce.p4java.impl.generic.core.file.FileSpec;
 import p4idea.P4Logger;
 
-import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 public class P4WrapperTemp extends P4Wrapper
 {
@@ -63,84 +63,6 @@ public class P4WrapperTemp extends P4Wrapper
     }
   }
 
-  public List<IFileSpec> openForEdit( IChangelist changelist, VirtualFile[] files ) throws ConnectionException,
-      RequestException, AccessException
-  {
-    List<IFileSpec> fileSpecs = fromVirtualFiles( files );
-    try
-    {
-      IClient client = getP4Server().getCurrentClient();
-      return client.editFiles( fileSpecs, false, false, changelist.getId(), null );
-    }
-    finally
-    {
-      attemptDisconnect();
-    }
-  }
-
-  public List<IFileSpec> openForAdd( IChangelist changelist, List<File> files ) throws ConnectionException,
-      AccessException
-  {
-    List<IFileSpec> fileSpecs = new ArrayList<>();
-    for ( File file : files )
-    {
-      fileSpecs.add( new FileSpec( file.getAbsolutePath() ) );
-    }
-    try
-    {
-      IClient client = getP4Server().getCurrentClient();
-      return client.addFiles( fileSpecs, false, changelist.getId(), null, false );
-    }
-    finally
-    {
-      attemptDisconnect();
-    }
-  }
-
-  public int revertEdit( File file ) throws ConnectionException,
-      AccessException
-  {
-    List<IFileSpec> reverted = revertEdit( Arrays.asList( file ), false );
-    if ( reverted.isEmpty() )
-    {
-      return -1;
-    }
-    P4Logger.getInstance().log( String.format( "Reverted: %s", file ) );
-    return reverted.get( 0 ).getChangelistId();
-  }
-
-  public List<IFileSpec> revertEdit( List<File> files, boolean revertOnlyUnchanged ) throws ConnectionException,
-      AccessException
-  {
-    List<IFileSpec> fileSpecs = new ArrayList<>();
-    for ( File file : files )
-    {
-      fileSpecs.add( new FileSpec( file.getAbsolutePath() ) );
-    }
-
-    try
-    {
-      IClient client = getP4Server().getCurrentClient();
-      List<IFileSpec> openedFiles = client.openedFiles( fileSpecs, -1, -1 );
-      if ( openedFiles.isEmpty() )
-      {
-        P4Logger.getInstance().log( "File(s) were not open for edit: " + files );
-        return Collections.emptyList();
-      }
-
-      List<IFileSpec> revertedFiles = client.revertFiles( openedFiles, false, -1, revertOnlyUnchanged, false );
-      if ( !revertedFiles.isEmpty() )
-      {
-        P4Logger.getInstance().log( String.format( "Reverted %d file(s)", revertedFiles.size() ) );
-      }
-      return revertedFiles;
-    }
-    finally
-    {
-      attemptDisconnect();
-    }
-  }
-
   public List<IChangelistSummary> getChangelists( String path ) throws ConnectionException, RequestException,
       AccessException
   {
@@ -161,7 +83,7 @@ public class P4WrapperTemp extends P4Wrapper
   {
     try
     {
-      List<String> files = new ArrayList<>();
+      List<String> files = Lists.newArrayList();
       for ( IFileSpec file : getP4Server().getChangelistFiles( changelist ) )
       {
         files.add( file.getDepotPathString() );

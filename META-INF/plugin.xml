@@ -17,6 +17,7 @@
       <li>0.4: Further flesh out proper VCS api, hook up first real P4Java calls, get rid of old crufty components.
       <li>0.5: First fully working implementation of open-for-edit. Fundamentals are now basically solid for further
                feature development.
+      <li>0.6: Rudimentary support for add/edit/delete in a pending default changelist.
       </ul>
       ]]>
   </change-notes>
