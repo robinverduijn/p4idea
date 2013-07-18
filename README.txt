@@ -11,7 +11,4 @@ It is still in a rudimentary state but already provides some basic functionality
   to submit these changes, diff them, move them to other changelists, etc.
 
 Future directions include making sure refactoring is fully supported (e.g. using P4 integrate/copy/smart move),
-allowing the plugin to offer named changelists, fixing the inevitable bugs as I find them, and more:
-
-- Support .p4ignore files just like the Eclipse plugin.
-- Check have list before opening for add/delete/etc and avoid e.g. readding a file which was already pending
+allowing the plugin to offer named changelists, fixing the inevitable bugs as I find them, and more.
