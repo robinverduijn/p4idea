@@ -9,12 +9,11 @@ import p4idea.P4Logger;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class P4Ignore
 {
-  public List<FilePath> p4ignore( List<FilePath> files ) throws ConnectionException, AccessException
+  public Collection<FilePath> p4ignore( Collection<FilePath> files ) throws ConnectionException, AccessException
   {
     Iterator<FilePath> iter = files.iterator();
     while ( iter.hasNext() )

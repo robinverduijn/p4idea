@@ -179,7 +179,7 @@ public class P4Wrapper
     _messages.clear();
   }
 
-  private Collection<IFileSpec> processResults( Collection<IFileSpec> files )
+  private List<IFileSpec> processResults( List<IFileSpec> files )
   {
     for ( IFileSpec file : files )
     {
@@ -335,14 +335,36 @@ public class P4Wrapper
     }
   }
 
-  public Collection<IFileSpec> getStatus( Collection<FilePath> files ) throws ConnectionException, AccessException
+  public List<IFileSpec> getOpenFiles() throws ConnectionException, AccessException
   {
-    List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
     try
     {
-      //return processResults( getP4Server().getOpenedFiles( fileSpecs, false, _clientSpec, -1, -1 ) );
+      return getP4Server().getOpenedFiles( null, false, _settings.getP4client(), -1, -1 );
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
+  }
+
+  public Collection<IFileSpec> getWhere( Collection<FilePath> files ) throws ConnectionException, AccessException
+  {
+    List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
+    return doGetWhere( fileSpecs );
+  }
+
+  public List<IFileSpec> getWhere( List<String> files ) throws ConnectionException, AccessException
+  {
+    List<IFileSpec> fileSpecs = FileLists.fromStrings( files );
+    return doGetWhere( fileSpecs );
+  }
+
+  private List<IFileSpec> doGetWhere( List<IFileSpec> fileSpecs ) throws ConnectionException, AccessException
+  {
+    try
+    {
       IClient client = getCurrentClient();
-      return client.haveList( fileSpecs );
+      return processResults( client.where( fileSpecs ) );
     }
     finally
     {

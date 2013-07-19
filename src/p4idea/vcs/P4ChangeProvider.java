@@ -27,14 +27,10 @@ public class P4ChangeProvider implements ChangeProvider
   public void getChanges( VcsDirtyScope dirtyScope, ChangelistBuilder builder, ProgressIndicator progress,
                           ChangeListManagerGate addGate ) throws VcsException
   {
-    if ( dirtyScope.getDirtyFiles().isEmpty() )
-    {
-      return;
-    }
     final P4ChangeCollector collector = new P4ChangeCollector( _project );
 
     final Collection<Change> changes = collector.collectChanges( dirtyScope );
-    final Collection<FilePath> unversionedFiles = collector.getFilesToRevert();
+    final Collection<FilePath> unversionedFiles = collector.getUnversionedFiles();
 
     doAddFiles( collector.getFilesToAdd() );
     doDeleteFiles( collector.getFilesToDelete() );

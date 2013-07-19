@@ -23,7 +23,8 @@ public class P4EditFileProvider implements EditFileProvider
         String path = file.getClientPathString();
         if ( null != path )
         {
-          P4Logger.getInstance().log( String.format( "Open for edit: %s %s", path, getP4DebugStatus( file ) ) );
+          P4Logger logger = P4Logger.getInstance();
+          logger.log( String.format( "Open for edit: %s %s", path, logger.getP4DebugStatus( file ) ) );
         }
       }
     }
@@ -38,16 +39,5 @@ public class P4EditFileProvider implements EditFileProvider
   {
     P4Logger.getInstance().log( "getRequestText()" );
     return null;
-  }
-
-  private String getP4DebugStatus( IFileSpec status )
-  {
-    StringBuilder msg = new StringBuilder();
-    msg.append( "action: " ).append( status.getAction() ).append( ", " );
-    msg.append( "depotPath: " ).append( status.getDepotPathString() ).append( ", " );
-    msg.append( "changelist: " ).append( status.getChangelistId() ).append( ", " );
-    msg.append( "startRevision: " ).append( status.getStartRevision() ).append( ", " );
-    msg.append( "endRevision: " ).append( status.getEndRevision() );
-    return msg.toString();
   }
 }

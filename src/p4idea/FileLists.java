@@ -32,6 +32,16 @@ public class FileLists
     return fileSpecs;
   }
 
+  public static List<IFileSpec> fromStrings( Collection<String> files )
+  {
+    List<IFileSpec> fileSpecs = Lists.newArrayList();
+    for ( String file : files )
+    {
+      fileSpecs.add( new FileSpec( file ) );
+    }
+    return fileSpecs;
+  }
+
   public static FilePath removeFromList( Collection<FilePath> dirtyFiles, File file )
   {
     Iterator<FilePath> iter = dirtyFiles.iterator();
@@ -45,5 +55,43 @@ public class FileLists
       }
     }
     return null;
+  }
+
+  public static List<IFileSpec> mergeLocalPaths( List<IFileSpec> haveList, List<IFileSpec> whereList )
+  {
+    //
+    // TODO: just hack something by replacing depot path prefix with P4 root? Not sure if that's 100% valid
+    //
+    for ( IFileSpec have : haveList )
+    {
+      IFileSpec where = findInList( whereList, have.getDepotPathString() );
+      if ( null != where )
+      {
+        have.setLocalPath( where.getLocalPathString() );
+      }
+    }
+    return haveList;
+  }
+
+  private static IFileSpec findInList( List<IFileSpec> fileSpecs, String depotPath )
+  {
+    for ( IFileSpec file : fileSpecs )
+    {
+      if ( depotPath.equals( file.getDepotPathString() ) )
+      {
+        return file;
+      }
+    }
+    return null;
+  }
+
+  public static List<String> getDepotPaths( List<IFileSpec> fileSpecs )
+  {
+    final List<String> depotPaths = new ArrayList<>( fileSpecs.size() );
+    for ( IFileSpec file : fileSpecs )
+    {
+      depotPaths.add( file.getDepotPathString() );
+    }
+    return depotPaths;
   }
 }
