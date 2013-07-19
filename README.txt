@@ -10,9 +10,6 @@ It is still in a rudimentary state but already provides some basic functionality
 - Leaves a pending (default) changelist with all the local changes; use your full-fledged Perforce GUI (P4V or P4Win)
   to submit these changes, diff them, move them to other changelists, etc.
 
-Future directions include making sure refactoring is fully supported (e.g. using P4 integrate/copy/smart move),
-allowing the plugin to offer named changelists, fixing the inevitable bugs as I find them, and more:
-
-- Support .p4ignore files just like the Eclipse plugin.
-- Check "have" list before opening for add/delete/etc and avoid e.g. re-adding a file which was already pending.
-- Cache expensive P4 lookups.
+Future improvements include making sure refactoring is fully supported (e.g. using P4 integrate/copy/smart move),
+allowing the plugin to offer named changelists, fixing the inevitable bugs as I find them,
+and ensuring performance is good.

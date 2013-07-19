@@ -43,7 +43,7 @@ public class P4Changelists extends P4Wrapper
     try
     {
       String result = getP4Server().deletePendingChangelist( changelist );
-      _messages.add( result );
+      processResult( result );
     }
     finally
     {

@@ -8,9 +8,9 @@ import com.perforce.p4java.client.IClient;
 import com.perforce.p4java.core.file.FileSpecOpStatus;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
-import com.perforce.p4java.impl.generic.core.file.FileSpec;
 import com.perforce.p4java.server.*;
 import org.jetbrains.annotations.NotNull;
+import p4idea.FileLists;
 import p4idea.P4Logger;
 import p4idea.vcs.PerforceVcs;
 
@@ -22,8 +22,9 @@ import java.util.List;
 public class P4Wrapper
 {
   private static final P4Wrapper P4 = new P4Wrapper();
-  protected final List<String> _messages = Lists.newArrayList();
+  private final List<String> _messages = Lists.newArrayList();
   private final boolean _autoDisconnect;
+  private final boolean _verbose;
   private final boolean _verboseErrors;
   private IServer _server;
   private P4Settings _settings;
@@ -32,6 +33,7 @@ public class P4Wrapper
   P4Wrapper()
   {
     _autoDisconnect = false;
+    _verbose = true;
     _verboseErrors = true;
   }
 
@@ -128,7 +130,7 @@ public class P4Wrapper
     }
   }
 
-  private File getP4Root() throws ConnectionException, AccessException
+  public File getP4Root() throws ConnectionException, AccessException
   {
     if ( null == _p4root )
     {
@@ -141,13 +143,13 @@ public class P4Wrapper
     return _p4root;
   }
 
-  public boolean isInvalidMapping( @NotNull String path ) throws ConnectionException, AccessException
+  public boolean isValidMapping( @NotNull String path ) throws ConnectionException, AccessException
   {
     try
     {
       File root = getP4Root();
       String filePath = new File( path ).getAbsolutePath();
-      return null == root || !filePath.startsWith( root.getAbsolutePath() );
+      return null != root && filePath.startsWith( root.getAbsolutePath() );
     }
     finally
     {
@@ -172,29 +174,9 @@ public class P4Wrapper
   {
     for ( String message : _messages )
     {
-      P4Logger.getInstance().log( "P4: " + message );
+      P4Logger.getInstance().log( String.format( "P4: %s", message ) );
     }
     _messages.clear();
-  }
-
-  protected List<IFileSpec> fromVirtualFiles( VirtualFile[] virtualFiles )
-  {
-    List<IFileSpec> fileSpecs = Lists.newArrayList();
-    for ( VirtualFile virtualFile : virtualFiles )
-    {
-      fileSpecs.add( new FileSpec( virtualFile.getPath() ) );
-    }
-    return fileSpecs;
-  }
-
-  protected List<IFileSpec> fromFilePaths( Collection<FilePath> filePaths )
-  {
-    List<IFileSpec> fileSpecs = Lists.newArrayList();
-    for ( FilePath filePath : filePaths )
-    {
-      fileSpecs.add( new FileSpec( filePath.getPath() ) );
-    }
-    return fileSpecs;
   }
 
   private Collection<IFileSpec> processResults( Collection<IFileSpec> files )
@@ -203,27 +185,38 @@ public class P4Wrapper
     {
       if ( file != null )
       {
-        String msg;
+        String msg = null;
         FileSpecOpStatus status = file.getOpStatus();
-        if ( status != FileSpecOpStatus.VALID )
+        if ( status == FileSpecOpStatus.VALID )
         {
-          msg = String.format( "%s: %s", status, file.getStatusMessage() );
-          if ( _verboseErrors )
+          if ( _verbose )
           {
-            msg = buildException( msg );
+            msg = file.getStatusMessage();
           }
         }
         else
         {
-          msg = file.getStatusMessage();
+          msg = String.format( "%s: %s", status, file.getStatusMessage() );
+          if ( _verboseErrors )
+          {
+            if ( status == FileSpecOpStatus.CLIENT_ERROR || status == FileSpecOpStatus.ERROR )
+            {
+              msg = buildException( msg );
+            }
+          }
         }
-        if ( null != msg )
-        {
-          _messages.add( msg );
-        }
+        processResult( msg );
       }
     }
     return files;
+  }
+
+  protected void processResult( String result )
+  {
+    if ( null != result )
+    {
+      _messages.add( result );
+    }
   }
 
   private String buildException( String msg )
@@ -288,7 +281,11 @@ public class P4Wrapper
 
   public Collection<IFileSpec> openForEdit( VirtualFile[] files ) throws P4JavaException
   {
-    List<IFileSpec> fileSpecs = fromVirtualFiles( files );
+    List<IFileSpec> fileSpecs = FileLists.fromVirtualFiles( files );
+    if ( files.length <= 0 )
+    {
+      return fileSpecs;
+    }
     try
     {
       IClient client = getCurrentClient();
@@ -303,7 +300,11 @@ public class P4Wrapper
   public Collection<IFileSpec> openForAdd( Collection<FilePath> files ) throws ConnectionException,
       AccessException
   {
-    List<IFileSpec> fileSpecs = fromFilePaths( files );
+    List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
+    if ( files.isEmpty() )
+    {
+      return fileSpecs;
+    }
     try
     {
       IClient client = getCurrentClient();
@@ -318,7 +319,11 @@ public class P4Wrapper
   public Collection<IFileSpec> openForDelete( Collection<FilePath> files ) throws ConnectionException,
       AccessException
   {
-    List<IFileSpec> fileSpecs = fromFilePaths( files );
+    List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
+    if ( files.isEmpty() )
+    {
+      return fileSpecs;
+    }
     try
     {
       IClient client = getCurrentClient();
@@ -332,7 +337,7 @@ public class P4Wrapper
 
   public Collection<IFileSpec> getStatus( Collection<FilePath> files ) throws ConnectionException, AccessException
   {
-    List<IFileSpec> fileSpecs = fromFilePaths( files );
+    List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
     try
     {
       //return processResults( getP4Server().getOpenedFiles( fileSpecs, false, _clientSpec, -1, -1 ) );
@@ -348,7 +353,11 @@ public class P4Wrapper
   public Collection<IFileSpec> revert( Collection<FilePath> files, boolean quiet ) throws ConnectionException,
       AccessException
   {
-    List<IFileSpec> fileSpecs = fromFilePaths( files );
+    List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
+    if ( files.isEmpty() )
+    {
+      return fileSpecs;
+    }
     try
     {
       IClient client = getCurrentClient();

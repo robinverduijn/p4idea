@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>net.rvd.idea.p4idea</id>
   <name>Perforce VCS Integration</name>
-  <version>0.6</version>
+  <version>0.7</version>
   <vendor email="robinverduijn.github@gmail.com" url="http://www.github.com">RVD</vendor>
 
   <description><![CDATA[
@@ -18,6 +18,7 @@
       <li>0.5: First fully working implementation of open-for-edit. Fundamentals are now basically solid for further
                feature development.
       <li>0.6: Rudimentary support for add/edit/delete in a pending default changelist.
+      <li>0.7: Support for .p4ignore files.
       </ul>
       ]]>
   </change-notes>
