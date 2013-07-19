@@ -11,7 +11,7 @@ import p4idea.P4Logger;
 import java.util.Arrays;
 import java.util.List;
 
-public class P4WrapperTemp extends P4Wrapper
+public class P4Changelists extends P4Wrapper
 {
   public IChangelist createChangelist( String description ) throws P4JavaException
   {
