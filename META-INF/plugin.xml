@@ -19,7 +19,7 @@
                feature development.
       <li>0.6: Rudimentary support for add/edit/delete in a pending default changelist.
       <li>0.7: Support for .p4ignore files.
-      <li>0.8: Sync with server on startup.
+      <li>0.8: Properly track client state so that "Changes" view is correct.
       </ul>
       ]]>
   </change-notes>
