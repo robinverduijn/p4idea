@@ -44,7 +44,7 @@ public class P4ChangeCollector
     }
     catch ( P4JavaException e )
     {
-      P4Wrapper.getP4().handleP4Exception( e );
+      P4Wrapper.getP4().handleP4Exception( "Error collecting changes", e );
     }
     return _changes;
   }
@@ -95,7 +95,7 @@ public class P4ChangeCollector
     _changes.addAll( _localChanges );
   }
 
-  private void processOpenP4Files()
+  private void processOpenP4Files() throws VcsException
   {
     try
     {
@@ -129,7 +129,7 @@ public class P4ChangeCollector
     }
     catch ( ConnectionException | AccessException e )
     {
-      P4Logger.getInstance().error( "Error retrieving P4 change status", e );
+      P4Wrapper.getP4().handleP4Exception( "Error retrieving P4 change status", e );
     }
   }
 

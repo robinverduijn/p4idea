@@ -30,7 +30,7 @@ public class P4EditFileProvider implements EditFileProvider
     }
     catch ( P4JavaException e )
     {
-      P4Wrapper.getP4().handleP4Exception( e );
+      P4Wrapper.getP4().handleP4Exception( "Error opening files for edit", e );
     }
   }
 

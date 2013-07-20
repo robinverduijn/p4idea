@@ -1,6 +1,7 @@
 package p4idea.perforce;
 
 import com.google.common.collect.Lists;
+import com.intellij.openapi.vcs.VcsException;
 import com.perforce.p4java.client.IClient;
 import com.perforce.p4java.core.*;
 import com.perforce.p4java.core.file.IFileSpec;
@@ -96,7 +97,7 @@ public class P4Changelists extends P4Wrapper
     }
   }
 
-  public IUser getUser( String id ) throws ConnectionException, AccessException
+  public IUser getUser( String id ) throws ConnectionException, AccessException, VcsException
   {
     try
     {
@@ -104,8 +105,7 @@ public class P4Changelists extends P4Wrapper
     }
     catch ( ConnectionException | AccessException | RequestException e )
     {
-      final String error = String.format( "P4: error looking up user \"%s\"", id );
-      P4Logger.getInstance().error( error, e );
+      getP4().handleP4Exception( String.format( "Error looking up user \"%s\"", id ), e );
       return null;
     }
     finally

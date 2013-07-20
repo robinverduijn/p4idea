@@ -242,13 +242,13 @@ public class P4Wrapper
     return client;
   }
 
-  public void handleP4Exception( P4JavaException e ) throws VcsException
+  public void handleP4Exception( String message, P4JavaException e ) throws VcsException
   {
     if ( PerforceVcs.Instance.getValidator().checkExecutableAndNotifyIfNeeded() )
     {
       return;
     }
-    throw new VcsException( e );
+    throw new VcsException( message, e );
   }
 
   public IServerInfo showServerInfo() throws ConnectionException, RequestException, AccessException

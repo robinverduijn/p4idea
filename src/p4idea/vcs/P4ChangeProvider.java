@@ -83,7 +83,7 @@ public class P4ChangeProvider implements ChangeProvider
     }
     catch ( P4JavaException e )
     {
-      P4Wrapper.getP4().handleP4Exception( e );
+      P4Wrapper.getP4().handleP4Exception( "Error adding files", e );
     }
   }
 
@@ -110,7 +110,7 @@ public class P4ChangeProvider implements ChangeProvider
     }
     catch ( P4JavaException e )
     {
-      P4Wrapper.getP4().handleP4Exception( e );
+      P4Wrapper.getP4().handleP4Exception( "Error deleting files", e );
     }
   }
 
@@ -134,7 +134,7 @@ public class P4ChangeProvider implements ChangeProvider
     }
     catch ( P4JavaException e )
     {
-      P4Wrapper.getP4().handleP4Exception( e );
+      P4Wrapper.getP4().handleP4Exception( "Error reverting files", e );
     }
   }
 }

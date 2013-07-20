@@ -121,10 +121,9 @@ public class PerforceVcsPanel
     @Override
     public void actionPerformed( ActionEvent event )
     {
-      P4Settings testSettings = new P4Settings();
       try
       {
-        apply( testSettings, true );
+        apply( new P4Settings(), true );
       }
       catch ( ConfigurationException e )
       {
