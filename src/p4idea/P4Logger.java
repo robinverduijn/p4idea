@@ -3,6 +3,9 @@ package p4idea;
 import com.intellij.openapi.diagnostic.Logger;
 import com.perforce.p4java.core.file.IFileSpec;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 public class P4Logger
 {
   private static final P4Logger INSTANCE = new P4Logger();
@@ -38,5 +41,20 @@ public class P4Logger
     msg.append( "startRevision: " ).append( status.getStartRevision() ).append( ", " );
     msg.append( "endRevision: " ).append( status.getEndRevision() );
     return msg.toString();
+  }
+
+  public String buildException( String msg )
+  {
+    return buildException( new Exception( msg ) );
+  }
+
+  public String buildException( Exception e )
+  {
+    StringWriter sw = new StringWriter();
+    try ( PrintWriter pw = new PrintWriter( sw ) )
+    {
+      e.printStackTrace( pw );
+      return sw.toString();
+    }
   }
 }

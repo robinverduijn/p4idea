@@ -9,6 +9,8 @@ import p4idea.perforce.P4Wrapper;
 
 import javax.swing.*;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserInput
 {
@@ -59,18 +61,29 @@ public class UserInput
 
   public static void displayPerforceInfo( JPanel panel, IServerInfo info )
   {
-    final String title = "Perforce Connection Successful";
     StringBuilder message = new StringBuilder();
     message.append( "<html>" );
-    message.append( String.format( "Server: %s<br>", info.getServerAddress() ) );
-    message.append( String.format( "User: %s<br>", info.getUserName() ) );
-    message.append( String.format( "Client: %s<br>", info.getClientName() ) );
-    message.append( String.format( "Root: %s<br>", info.getClientRoot() ) );
-    message.append( String.format( "Version: %s<br>", info.getServerVersion() ) );
-    message.append( String.format( "Uptime: %s<br>", info.getServerUptime() ) );
-    message.append( String.format( "Server Root: %s", info.getServerRoot() ) );
+    for ( String line : getPerforceInfo( info ) )
+    {
+      message.append( line ).append( "<br>" );
+    }
     message.append( "</html>" );
 
+    final String title = "Perforce Connection Successful";
     Messages.showInfoMessage( panel, message.toString(), title );
+  }
+
+  public static List<String> getPerforceInfo( IServerInfo info )
+  {
+    List<String> message = new ArrayList<>();
+    message.add( String.format( "Server: %s", info.getServerAddress() ) );
+    message.add( String.format( "User: %s", info.getUserName() ) );
+    message.add( String.format( "Client: %s", info.getClientName() ) );
+    message.add( String.format( "Root: %s", info.getClientRoot() ) );
+    message.add( String.format( "Version: %s", info.getServerVersion() ) );
+    message.add( String.format( "Uptime: %s", info.getServerUptime() ) );
+    message.add( String.format( "Server Root: %s", info.getServerRoot() ) );
+
+    return message;
   }
 }

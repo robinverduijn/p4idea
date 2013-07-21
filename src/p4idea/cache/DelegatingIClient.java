@@ -10,7 +10,6 @@ import com.perforce.p4java.option.client.*;
 import com.perforce.p4java.option.server.OpenedFilesOptions;
 import com.perforce.p4java.server.IServer;
 import com.perforce.p4java.server.callback.IStreamingCallback;
-import p4idea.P4Logger;
 
 import java.io.InputStream;
 import java.util.Date;

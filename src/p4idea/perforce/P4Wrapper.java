@@ -13,9 +13,10 @@ import org.jetbrains.annotations.NotNull;
 import p4idea.FileLists;
 import p4idea.P4Logger;
 import p4idea.cache.CachingIServer;
+import p4idea.ui.UserInput;
 import p4idea.vcs.PerforceVcs;
 
-import java.io.*;
+import java.io.File;
 import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.List;
@@ -203,7 +204,7 @@ public class P4Wrapper
           {
             if ( status == FileSpecOpStatus.CLIENT_ERROR || status == FileSpecOpStatus.ERROR )
             {
-              msg = buildException( msg );
+              msg = P4Logger.getInstance().buildException( msg );
             }
           }
         }
@@ -218,16 +219,6 @@ public class P4Wrapper
     if ( null != result )
     {
       _messages.add( result );
-    }
-  }
-
-  private String buildException( String msg )
-  {
-    StringWriter sw = new StringWriter();
-    try ( PrintWriter pw = new PrintWriter( sw ) )
-    {
-      new Exception( msg ).printStackTrace( pw );
-      return sw.toString();
     }
   }
 
@@ -260,14 +251,10 @@ public class P4Wrapper
       IServerInfo info = getP4Server().getServerInfo();
       if ( info != null )
       {
-        P4Logger logger = P4Logger.getInstance();
-        logger.log( String.format( "Server: %s", info.getServerAddress() ) );
-        logger.log( String.format( "User: %s", info.getUserName() ) );
-        logger.log( String.format( "Client: %s", info.getClientName() ) );
-        logger.log( String.format( "Root: %s", info.getClientRoot() ) );
-        logger.log( String.format( "Version: %s", info.getServerVersion() ) );
-        logger.log( String.format( "Uptime: %s", info.getServerUptime() ) );
-        logger.log( String.format( "Server Root: %s", info.getServerRoot() ) );
+        for ( String line : UserInput.getPerforceInfo( info ) )
+        {
+          P4Logger.getInstance().log( line );
+        }
       }
       else
       {

@@ -10,7 +10,6 @@ import com.perforce.p4java.exception.*;
 import com.perforce.p4java.option.server.DescribeOptions;
 import com.perforce.p4java.server.*;
 import com.perforce.p4java.server.callback.*;
-import p4idea.P4Logger;
 
 import java.io.InputStream;
 import java.nio.charset.UnsupportedCharsetException;
