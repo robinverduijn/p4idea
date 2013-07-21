@@ -12,6 +12,7 @@ import com.perforce.p4java.server.*;
 import org.jetbrains.annotations.NotNull;
 import p4idea.FileLists;
 import p4idea.P4Logger;
+import p4idea.cache.CachingIServer;
 import p4idea.vcs.PerforceVcs;
 
 import java.io.*;
@@ -80,7 +81,8 @@ public class P4Wrapper
     {
       throw new ConfigException( "P4 server settings not set" );
     }
-    _server = ServerFactory.getServer( String.format( "p4java://%s", _settings.getP4port() ), null );
+    IServer server = ServerFactory.getServer( String.format( "p4java://%s", _settings.getP4port() ), null );
+    _server = new CachingIServer( server );
     _server.setUserName( _settings.getP4user() );
 
     _server.connect();

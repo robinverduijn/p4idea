@@ -7,7 +7,6 @@ import com.perforce.p4java.core.*;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.impl.generic.core.file.FileSpec;
-import p4idea.P4Logger;
 
 import java.util.Arrays;
 import java.util.List;
