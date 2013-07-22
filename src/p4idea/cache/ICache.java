@@ -4,7 +4,7 @@ public interface ICache<T>
 {
   String getCacheName();
 
-  T getEntry( CacheKey<T> key );
+  T getEntry( ICacheKey<T> key );
 
   T putEntry( T entry );
 
@@ -12,9 +12,9 @@ public interface ICache<T>
 
   void flush();
 
-  CacheKey<T> getCacheKey( T entry );
+  ICacheKey<T> getCacheKey( T entry );
 
-  interface CacheKey<T>
+  interface ICacheKey<T>
   {
     public int getKey();
   }

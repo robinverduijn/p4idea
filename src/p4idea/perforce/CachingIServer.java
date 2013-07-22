@@ -14,13 +14,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CachingIServer extends DelegatingIServer
 {
-  private final ICache<IFileSpec> _openedFilesCache;
+  private final ICache<IFileSpec> _openedCache;
 
   public CachingIServer( IServer server )
   {
     super( server );
-    //_openedFilesCache = new LoggingICacheDecorator( new MapBasedIFileSpecCache( "p4OpenedCache" ) );
-    _openedFilesCache = new NonCachingIFileSpecCache( "p4OpenedCache" );
+
+    final int initialSize = 10000;
+    final int ttl = 15 * 60 * 1000;
+    //_openedCache = new LoggingICacheDecorator( new GuavaBasedIFileSpecCache( "p4OpenedCache", initialSize, ttl ) );
+    _openedCache = new NonCachingIFileSpecCache( "p4OpenedCache", initialSize, ttl );
   }
 
   public IClient getClient( String s ) throws ConnectionException, RequestException, AccessException
@@ -41,7 +44,7 @@ public class CachingIServer extends DelegatingIServer
     checkNotNull( iFileSpecs );
 
     OpenedFilesInvoker invoker = new OpenedFilesInvoker( allClients, clientName, maxFiles, changeListId );
-    return ICaches.makeCachedCall( _openedFilesCache, iFileSpecs, invoker );
+    return ICaches.makeCachedCall( _openedCache, iFileSpecs, invoker );
   }
 
   private class OpenedFilesInvoker implements ICaches.IListInvoker<IFileSpec>

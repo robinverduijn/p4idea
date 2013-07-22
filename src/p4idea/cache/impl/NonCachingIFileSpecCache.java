@@ -1,25 +1,16 @@
 package p4idea.cache.impl;
 
 import com.perforce.p4java.core.file.IFileSpec;
-import p4idea.cache.ICache;
 
-public class NonCachingIFileSpecCache implements ICache<IFileSpec>
+public class NonCachingIFileSpecCache extends AbstractICache<IFileSpec>
 {
-  private final String _name;
-
-  public NonCachingIFileSpecCache( String name )
+  public NonCachingIFileSpecCache( final String name, final int initialSize, final long ttl )
   {
-    _name = name;
+    super( name, initialSize, ttl );
   }
 
   @Override
-  public String getCacheName()
-  {
-    return _name;
-  }
-
-  @Override
-  public IFileSpec getEntry( CacheKey<IFileSpec> key )
+  public IFileSpec getEntry( ICacheKey<IFileSpec> key )
   {
     return null;
   }
@@ -42,7 +33,7 @@ public class NonCachingIFileSpecCache implements ICache<IFileSpec>
   }
 
   @Override
-  public CacheKey<IFileSpec> getCacheKey( IFileSpec entry )
+  public ICacheKey<IFileSpec> getCacheKey( IFileSpec entry )
   {
     return new IFileSpecHashingCacheKey( entry );
   }

@@ -1,28 +1,32 @@
 package p4idea.cache.impl;
 
-import com.google.common.collect.Maps;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.perforce.p4java.core.file.IFileSpec;
 
-import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class MapBasedIFileSpecCache extends AbstractICache<IFileSpec>
+public class GuavaBasedIFileSpecCache extends AbstractICache<IFileSpec>
 {
-  private final Map<Integer, IFileSpec> _entries;
+  private final Cache<Integer, IFileSpec> _cache;
 
-  public MapBasedIFileSpecCache( final String name, final int initialSize, final long ttl )
+  public GuavaBasedIFileSpecCache( final String name, final int initialSize, final long ttl )
   {
     super( name, initialSize, ttl );
 
-    _entries = Maps.newConcurrentMap();
+    _cache = CacheBuilder.newBuilder()
+        .expireAfterAccess( ttl, TimeUnit.MILLISECONDS )
+        .initialCapacity( initialSize )
+        .build();
   }
 
   @Override
   public IFileSpec getEntry( ICacheKey<IFileSpec> key )
   {
     checkNotNull( key );
-    return _entries.get( key.getKey() );
+    return _cache.getIfPresent( key.getKey() );
   }
 
   @Override
@@ -30,7 +34,8 @@ public class MapBasedIFileSpecCache extends AbstractICache<IFileSpec>
   {
     ICacheKey<IFileSpec> key = getCacheKey( entry );
     checkNotNull( key );
-    return _entries.put( key.getKey(), entry );
+    _cache.put( key.getKey(), entry );
+    return null;
   }
 
   @Override
@@ -38,13 +43,14 @@ public class MapBasedIFileSpecCache extends AbstractICache<IFileSpec>
   {
     ICacheKey<IFileSpec> key = getCacheKey( entry );
     checkNotNull( key );
-    return null != _entries.remove( key.getKey() );
+    _cache.invalidate( key.getKey() );
+    return false;
   }
 
   @Override
   public void flush()
   {
-    _entries.clear();
+    _cache.invalidateAll();
   }
 
   @Override

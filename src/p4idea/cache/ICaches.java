@@ -46,7 +46,7 @@ public class ICaches
     while ( iter.hasNext() )
     {
       T entry = iter.next();
-      ICache.CacheKey<T> key = cache.getCacheKey( entry );
+      ICache.ICacheKey<T> key = cache.getCacheKey( entry );
       T cachedEntry = cache.getEntry( key );
       if ( null != cachedEntry )
       {

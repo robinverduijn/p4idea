@@ -24,7 +24,7 @@ public class LoggingICacheDecorator implements ICache<IFileSpec>
   }
 
   @Override
-  public IFileSpec getEntry( CacheKey<IFileSpec> key )
+  public IFileSpec getEntry( ICacheKey<IFileSpec> key )
   {
     IFileSpec result = _cache.getEntry( key );
     if ( null == result )
@@ -78,7 +78,7 @@ public class LoggingICacheDecorator implements ICache<IFileSpec>
   }
 
   @Override
-  public CacheKey<IFileSpec> getCacheKey( IFileSpec entry )
+  public ICacheKey<IFileSpec> getCacheKey( IFileSpec entry )
   {
     return _cache.getCacheKey( entry );
   }

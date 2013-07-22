@@ -6,7 +6,7 @@ import p4idea.cache.ICache;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class IFileSpecHashingCacheKey implements ICache.CacheKey<IFileSpec>
+public class IFileSpecHashingCacheKey implements ICache.ICacheKey<IFileSpec>
 {
   private final int _value;
 

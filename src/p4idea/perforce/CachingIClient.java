@@ -20,10 +20,13 @@ public class CachingIClient extends DelegatingIClient
   public CachingIClient( IClient client )
   {
     super( client );
-    //_haveCache = new LoggingICacheDecorator( new MapBasedIFileSpecCache( "p4HaveCache" ) );
-    //_whereCache = new LoggingICacheDecorator( new MapBasedIFileSpecCache( "p4WhereCache" ) );
-    _haveCache = new NonCachingIFileSpecCache( "p4HaveCache" );
-    _whereCache = new NonCachingIFileSpecCache( "p4WhereCache" );
+
+    final int initialSize = 10000;
+    final int ttl = 15 * 60 * 1000;
+    //_haveCache = new LoggingICacheDecorator( new GuavaBasedIFileSpecCache( "p4HaveCache", initialSize, ttl ) );
+    //_whereCache = new LoggingICacheDecorator( new GuavaBasedIFileSpecCache( "p4WhereCache", initialSize, ttl ) );
+    _haveCache = new NonCachingIFileSpecCache( "p4HaveCache", initialSize, ttl );
+    _whereCache = new NonCachingIFileSpecCache( "p4WhereCache", initialSize, ttl );
   }
 
   @Override
