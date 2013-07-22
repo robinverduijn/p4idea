@@ -1,7 +1,8 @@
-package p4idea.cache;
+package p4idea.cache.impl;
 
 import com.google.common.collect.Maps;
 import com.perforce.p4java.core.file.IFileSpec;
+import p4idea.cache.ICache;
 
 import java.util.Map;
 

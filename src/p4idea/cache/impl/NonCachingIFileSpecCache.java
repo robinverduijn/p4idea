@@ -1,6 +1,7 @@
-package p4idea.cache;
+package p4idea.cache.impl;
 
 import com.perforce.p4java.core.file.IFileSpec;
+import p4idea.cache.ICache;
 
 public class NonCachingIFileSpecCache implements ICache<IFileSpec>
 {

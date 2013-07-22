@@ -1,10 +1,12 @@
-package p4idea.cache;
+package p4idea.perforce;
 
 import com.perforce.p4java.client.IClient;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConnectionException;
 import p4idea.P4Logger;
+import p4idea.cache.*;
+import p4idea.cache.impl.NonCachingIFileSpecCache;
 
 import java.util.List;
 
