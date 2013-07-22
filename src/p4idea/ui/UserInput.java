@@ -76,7 +76,6 @@ public class UserInput
   public static List<String> getPerforceInfo( IServerInfo info )
   {
     List<String> message = new ArrayList<>();
-    message.add( String.format( "Server: %s", info.getServerAddress() ) );
     message.add( String.format( "User: %s", info.getUserName() ) );
     message.add( String.format( "Client: %s", info.getClientName() ) );
     message.add( String.format( "Root: %s", info.getClientRoot() ) );
