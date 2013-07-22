@@ -17,7 +17,7 @@ public class CachingIClient extends DelegatingIClient
   public CachingIClient( IClient client )
   {
     super( client );
-    _whereCache = new LoggingICacheDecorator( new MapBasedIFileSpecCache() );
+    _whereCache = new LoggingICacheDecorator( new NonCachingIFileSpecCache( "p4WhereCache" ) );
   }
 
   @Override
@@ -25,14 +25,14 @@ public class CachingIClient extends DelegatingIClient
   {
     checkNotNull( iFileSpecs );
 
-    WhereArguments args = new WhereArguments();
-    return ICaches.makeCachedCall( _whereCache, iFileSpecs, args );
+    WhereInvoker invoker = new WhereInvoker();
+    return ICaches.makeCachedCall( _whereCache, iFileSpecs, invoker );
   }
 
-  public class WhereArguments implements ICaches.IListInvoker<IFileSpec>
+  public class WhereInvoker implements ICaches.IListInvoker<IFileSpec>
   {
     @Override
-    public List<IFileSpec> applyToList( List<IFileSpec> list ) throws ConnectionException, AccessException
+    public List<IFileSpec> invokeOn( List<IFileSpec> list ) throws ConnectionException, AccessException
     {
       P4Logger.getInstance().log( "Making a P4.where() call" );
       return _client.where( list );

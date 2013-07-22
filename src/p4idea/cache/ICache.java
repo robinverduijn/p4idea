@@ -2,6 +2,8 @@ package p4idea.cache;
 
 public interface ICache<T>
 {
+  String getCacheName();
+
   T getEntry( CacheKey<T> key );
 
   T putEntry( T entry );

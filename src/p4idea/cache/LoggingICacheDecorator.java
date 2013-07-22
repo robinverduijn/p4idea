@@ -18,6 +18,12 @@ public class LoggingICacheDecorator implements ICache<IFileSpec>
   }
 
   @Override
+  public String getCacheName()
+  {
+    return _cache.getCacheName();
+  }
+
+  @Override
   public IFileSpec getEntry( CacheKey<IFileSpec> key )
   {
     IFileSpec result = _cache.getEntry( key );
@@ -68,7 +74,7 @@ public class LoggingICacheDecorator implements ICache<IFileSpec>
   public void flush()
   {
     _cache.flush();
-    log( String.format( "Flushed: %s", _cache ) );
+    log( String.format( "Flushed" ) );
   }
 
   @Override
@@ -79,6 +85,6 @@ public class LoggingICacheDecorator implements ICache<IFileSpec>
 
   private void log( String message )
   {
-    _logger.log( String.format( "%d: %s", _cache.hashCode(), message ) );
+    _logger.log( String.format( "[%s]: %s", _cache.getCacheName(), message ) );
   }
 }

@@ -17,7 +17,7 @@ public class CachingIServer extends DelegatingIServer
   public CachingIServer( IServer server )
   {
     super( server );
-    _openedFilesCache = new LoggingICacheDecorator( new MapBasedIFileSpecCache() );
+    _openedFilesCache = new LoggingICacheDecorator( new NonCachingIFileSpecCache( "p4OpenedCache" ) );
   }
 
   public IClient getClient( String s ) throws ConnectionException, RequestException, AccessException
@@ -37,18 +37,18 @@ public class CachingIServer extends DelegatingIServer
   {
     checkNotNull( iFileSpecs );
 
-    OpenedFilesArguments args = new OpenedFilesArguments( allClients, clientName, maxFiles, changeListId );
-    return ICaches.makeCachedCall( _openedFilesCache, iFileSpecs, args );
+    OpenedFilesInvoker invoker = new OpenedFilesInvoker( allClients, clientName, maxFiles, changeListId );
+    return ICaches.makeCachedCall( _openedFilesCache, iFileSpecs, invoker );
   }
 
-  private class OpenedFilesArguments implements ICaches.IListInvoker<IFileSpec>
+  private class OpenedFilesInvoker implements ICaches.IListInvoker<IFileSpec>
   {
     final boolean _allClients;
     final String _clientName;
     final int _maxFiles;
     final int _changeListId;
 
-    public OpenedFilesArguments( boolean allClients, String clientName, int maxFiles, int changeListId )
+    public OpenedFilesInvoker( boolean allClients, String clientName, int maxFiles, int changeListId )
     {
       _allClients = allClients;
       _clientName = clientName;
@@ -57,7 +57,7 @@ public class CachingIServer extends DelegatingIServer
     }
 
     @Override
-    public List<IFileSpec> applyToList( List<IFileSpec> list ) throws ConnectionException, AccessException
+    public List<IFileSpec> invokeOn( List<IFileSpec> list ) throws ConnectionException, AccessException
     {
       P4Logger.getInstance().log( "Making a P4.getOpenedFiles() call" );
       return _server.getOpenedFiles( list, _allClients, _clientName, _maxFiles, _changeListId );

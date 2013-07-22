@@ -3,7 +3,6 @@ package p4idea.cache;
 import com.google.common.collect.Lists;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConnectionException;
-import p4idea.P4Logger;
 
 import java.util.*;
 
@@ -20,7 +19,7 @@ public class ICaches
     }
   }
 
-  public static <T> List<T> makeCachedCall( ICache<T> cache, List<T> input, IListInvoker<T> args ) throws
+  public static <T> List<T> makeCachedCall( ICache<T> cache, List<T> input, IListInvoker<T> invoker ) throws
       ConnectionException, AccessException
   {
     checkNotNull( input );
@@ -31,7 +30,7 @@ public class ICaches
     List<T> alreadyCached = filterCachedEntries( cache, input );
     if ( wasEmpty || !input.isEmpty() )
     {
-      List<T> fresh = args.applyToList( input );
+      List<T> fresh = invoker.invokeOn( input );
       putEntries( cache, fresh );
       alreadyCached.addAll( fresh );
     }
@@ -60,6 +59,6 @@ public class ICaches
 
   public static interface IListInvoker<T>
   {
-    List<T> applyToList( List<T> list ) throws ConnectionException, AccessException;
+    List<T> invokeOn( List<T> list ) throws ConnectionException, AccessException;
   }
 }
