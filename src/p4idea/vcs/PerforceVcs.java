@@ -174,5 +174,4 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
     log( "getCheckoutProvider()" );
     return super.getCheckoutProvider();
   }
-
 }
