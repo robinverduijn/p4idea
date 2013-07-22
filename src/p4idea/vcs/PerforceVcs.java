@@ -72,7 +72,7 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
     }
 
     final VirtualFile virtualFile = filePath.getVirtualFile();
-    final FileStatus fileStatus = FileStatusManager.getInstance( myProject ).getStatus( virtualFile );
+    final FileStatus fileStatus = FileStatusManager.getInstance( getProject() ).getStatus( virtualFile );
     boolean alreadyExists = fileStatus != FileStatus.UNKNOWN && fileStatus != FileStatus.ADDED;
     if ( !alreadyExists )
     {
@@ -103,32 +103,9 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
 
   @Nullable
   @Override
-  public CheckinEnvironment getCheckinEnvironment()
-  {
-    log( "getCheckinEnvironment()" );
-    return super.getCheckinEnvironment();
-  }
-
-  @Override
-  public CheckoutProvider getCheckoutProvider()
-  {
-    log( "getCheckoutProvider()" );
-    return super.getCheckoutProvider();
-  }
-
-  @Nullable
-  @Override
   public EditFileProvider getEditFileProvider()
   {
     return _editFileProvider;
-  }
-
-  @Nullable
-  @Override
-  public ChangeListEditHandler getEditHandler()
-  {
-    log( "getEditHandler()" );
-    return super.getEditHandler();
   }
 
   @Nullable
@@ -163,6 +140,19 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
     }
   }
 
+  private void log( String message )
+  {
+    P4Logger.getInstance().log( message );
+  }
+
+  @Nullable
+  @Override
+  public ChangeListEditHandler getEditHandler()
+  {
+    log( "getEditHandler()" );
+    return super.getEditHandler();
+  }
+
   @Override
   public void enableIntegration()
   {
@@ -170,8 +160,19 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
     super.enableIntegration();
   }
 
-  private void log( String message )
+  @Nullable
+  @Override
+  public CheckinEnvironment getCheckinEnvironment()
   {
-    P4Logger.getInstance().log( message );
+    log( "getCheckinEnvironment()" );
+    return super.getCheckinEnvironment();
   }
+
+  @Override
+  public CheckoutProvider getCheckoutProvider()
+  {
+    log( "getCheckoutProvider()" );
+    return super.getCheckoutProvider();
+  }
+
 }
