@@ -15,7 +15,7 @@ public class MapBasedIFileSpecCache implements ICache<IFileSpec>
 
   public MapBasedIFileSpecCache( final String name )
   {
-    _entries = Maps.newLinkedHashMap();
+    _entries = Maps.newConcurrentMap();
     _name = name;
   }
 

@@ -4,7 +4,6 @@ import com.perforce.p4java.client.IClient;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.server.IServer;
-import p4idea.P4Logger;
 import p4idea.cache.ICache;
 import p4idea.cache.ICaches;
 import p4idea.cache.impl.NonCachingIFileSpecCache;
@@ -20,6 +19,7 @@ public class CachingIServer extends DelegatingIServer
   public CachingIServer( IServer server )
   {
     super( server );
+    //_openedFilesCache = new LoggingICacheDecorator( new MapBasedIFileSpecCache( "p4OpenedCache" ) );
     _openedFilesCache = new NonCachingIFileSpecCache( "p4OpenedCache" );
   }
 

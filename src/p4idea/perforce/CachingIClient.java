@@ -4,8 +4,8 @@ import com.perforce.p4java.client.IClient;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConnectionException;
-import p4idea.P4Logger;
-import p4idea.cache.*;
+import p4idea.cache.ICache;
+import p4idea.cache.ICaches;
 import p4idea.cache.impl.NonCachingIFileSpecCache;
 
 import java.util.List;
@@ -20,6 +20,8 @@ public class CachingIClient extends DelegatingIClient
   public CachingIClient( IClient client )
   {
     super( client );
+    //_haveCache = new LoggingICacheDecorator( new MapBasedIFileSpecCache( "p4HaveCache" ) );
+    //_whereCache = new LoggingICacheDecorator( new MapBasedIFileSpecCache( "p4WhereCache" ) );
     _haveCache = new NonCachingIFileSpecCache( "p4HaveCache" );
     _whereCache = new NonCachingIFileSpecCache( "p4WhereCache" );
   }
