@@ -5,6 +5,9 @@ import com.perforce.p4java.core.file.IFileSpec;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class P4Logger
 {
@@ -55,6 +58,16 @@ public class P4Logger
     {
       e.printStackTrace( pw );
       return sw.toString();
+    }
+  }
+
+  public void displayList( String message, List<IFileSpec> list )
+  {
+    checkNotNull( list );
+    log( message );
+    for ( IFileSpec spec : list )
+    {
+      log( String.format( "- %s", spec.getPreferredPathString() ) );
     }
   }
 }

@@ -328,7 +328,8 @@ public class P4Wrapper
   {
     try
     {
-      return getP4Server().getOpenedFiles( null, false, _settings.getP4client(), -1, -1 );
+      final List<IFileSpec> fileSpecs = Lists.newArrayList();
+      return getP4Server().getOpenedFiles( fileSpecs, false, _settings.getP4client(), -1, -1 );
     }
     finally
     {
