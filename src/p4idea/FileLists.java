@@ -59,9 +59,6 @@ public class FileLists
 
   public static List<IFileSpec> mergeLocalPaths( List<IFileSpec> haveList, List<IFileSpec> whereList )
   {
-    //
-    // TODO: just hack something by replacing depot path prefix with P4 root? Not sure if that's 100% valid
-    //
     for ( IFileSpec have : haveList )
     {
       IFileSpec where = findInList( whereList, have.getDepotPathString() );

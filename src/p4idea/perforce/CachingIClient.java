@@ -14,12 +14,23 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CachingIClient extends DelegatingIClient
 {
+  private final ICache<IFileSpec> _haveCache;
   private final ICache<IFileSpec> _whereCache;
 
   public CachingIClient( IClient client )
   {
     super( client );
-    _whereCache = new LoggingICacheDecorator( new NonCachingIFileSpecCache( "p4WhereCache" ) );
+    _haveCache = new NonCachingIFileSpecCache( "p4HaveCache" );
+    _whereCache = new NonCachingIFileSpecCache( "p4WhereCache" );
+  }
+
+  @Override
+  public List<IFileSpec> haveList( List<IFileSpec> iFileSpecs ) throws ConnectionException, AccessException
+  {
+    checkNotNull( iFileSpecs );
+
+    HaveInvoker invoker = new HaveInvoker();
+    return ICaches.makeCachedCall( _haveCache, iFileSpecs, invoker );
   }
 
   @Override
@@ -31,12 +42,20 @@ public class CachingIClient extends DelegatingIClient
     return ICaches.makeCachedCall( _whereCache, iFileSpecs, invoker );
   }
 
+  public class HaveInvoker implements ICaches.IListInvoker<IFileSpec>
+  {
+    @Override
+    public List<IFileSpec> invokeOn( List<IFileSpec> list ) throws ConnectionException, AccessException
+    {
+      return _client.haveList( list );
+    }
+  }
+
   public class WhereInvoker implements ICaches.IListInvoker<IFileSpec>
   {
     @Override
     public List<IFileSpec> invokeOn( List<IFileSpec> list ) throws ConnectionException, AccessException
     {
-      P4Logger.getInstance().log( "Making a P4.where() call" );
       return _client.where( list );
     }
   }

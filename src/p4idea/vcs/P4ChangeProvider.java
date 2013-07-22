@@ -95,9 +95,9 @@ public class P4ChangeProvider implements ChangeProvider
     }
     try
     {
-      // TODO: check have
       P4Wrapper p4 = P4Wrapper.getP4();
-      p4.revert( files, true );
+      List<IFileSpec> fileSpecs = p4.getHave( files );
+      p4.revert( fileSpecs, true );
       Collection<IFileSpec> deleted = p4.openForDelete( files );
       for ( IFileSpec file : deleted )
       {

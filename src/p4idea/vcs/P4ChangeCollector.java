@@ -52,7 +52,8 @@ public class P4ChangeCollector
   private void processLocalFiles( Collection<FilePath> dirtyFiles ) throws ConnectionException, AccessException,
       VcsException
   {
-    for ( IFileSpec status : P4Wrapper.getP4().getWhere( dirtyFiles ) )
+    Collection<FilePath> localFiles = _p4ignore.p4ignore( dirtyFiles );
+    for ( IFileSpec status : P4Wrapper.getP4().getWhere( localFiles ) )
     {
       if ( null != status.getLocalPathString() )
       {
@@ -62,11 +63,11 @@ public class P4ChangeCollector
         {
           if ( file.exists() )
           {
-            _localChanges.add( getVersionedEdit( path, status ) );
+            _localChanges.add( getUnversionedAdd( path ) );
           }
           else
           {
-            _localChanges.add( getVersionedDelete( path, status ) );
+            _unversionedFiles.add( path );
           }
         }
         else
@@ -75,20 +76,10 @@ public class P4ChangeCollector
           throw new VcsException( String.format( "Unknown file: %s", file ) );
         }
       }
-      // else: file does not exist in depot, deal with unversioned files below
-    }
-
-    for ( FilePath path : _p4ignore.p4ignore( dirtyFiles ) )
-    {
-      File file = path.getIOFile();
-      if ( file.exists() )
-      {
-        _localChanges.add( getUnversionedAdd( path ) );
-      }
       else
       {
-        // Unversioned delete does not require any changes on the server
-        _unversionedFiles.add( path );
+        String info = P4Logger.getInstance().getP4DebugStatus( status );
+        throw new VcsException( String.format( "Unable to determine local path for %s", info ) );
       }
     }
 
@@ -111,6 +102,12 @@ public class P4ChangeCollector
       {
         String pathStr = file.getLocalPathString();
         FilePath path = new FilePathImpl( new File( pathStr ), false );
+        if ( _unversionedFiles.contains( path ) )
+        {
+          // Ignore unversioned files here since they override the slightly staler data which came back from P4;
+          // otherwise our local changes won't take effect.
+          continue;
+        }
         switch ( file.getAction() )
         {
           case ADD:
@@ -135,14 +132,14 @@ public class P4ChangeCollector
 
   private Change getVersionedEdit( FilePath path, IFileSpec file )
   {
-    ContentRevision before = new P4ContentRevision( _project, path, file.getEndRevision() );
-    return new Change( before, null, FileStatus.MODIFIED );
+    ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
+    return new Change( null, after, FileStatus.MODIFIED );
   }
 
   private Change getVersionedDelete( FilePath path, IFileSpec file )
   {
-    ContentRevision before = new P4ContentRevision( _project, path, file.getEndRevision() );
-    return new Change( before, null, FileStatus.DELETED );
+    ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
+    return new Change( null, after, FileStatus.DELETED );
   }
 
   private Change getVersionedAdd( FilePath path, IFileSpec file )
@@ -177,7 +174,7 @@ public class P4ChangeCollector
     {
       if ( change.getFileStatus() == FileStatus.DELETED )
       {
-        files.add( change.getBeforeRevision().getFile() );
+        files.add( change.getAfterRevision().getFile() );
       }
     }
     return files;

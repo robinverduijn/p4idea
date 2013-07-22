@@ -350,6 +350,11 @@ public class P4Wrapper
 
   private List<IFileSpec> doGetWhere( List<IFileSpec> fileSpecs ) throws ConnectionException, AccessException
   {
+    if ( fileSpecs.isEmpty() )
+    {
+      // We do not allow blanket where() calls, just return empty in that case
+      return fileSpecs;
+    }
     try
     {
       IClient client = getCurrentClient();
@@ -361,11 +366,31 @@ public class P4Wrapper
     }
   }
 
+  public List<IFileSpec> getHave( Collection<FilePath> files ) throws ConnectionException, AccessException
+  {
+    List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
+    try
+    {
+      IClient client = getCurrentClient();
+      return client.haveList( fileSpecs );
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
+  }
+
   public Collection<IFileSpec> revert( Collection<FilePath> files, boolean quiet ) throws ConnectionException,
       AccessException
   {
     List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
-    if ( files.isEmpty() )
+    return revert( fileSpecs, quiet );
+  }
+
+  public Collection<IFileSpec> revert( List<IFileSpec> fileSpecs, boolean quiet ) throws ConnectionException,
+      AccessException
+  {
+    if ( fileSpecs.isEmpty() )
     {
       return fileSpecs;
     }

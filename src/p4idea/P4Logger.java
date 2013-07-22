@@ -43,6 +43,7 @@ public class P4Logger
     msg.append( "changelist: " ).append( status.getChangelistId() ).append( ", " );
     msg.append( "startRevision: " ).append( status.getStartRevision() ).append( ", " );
     msg.append( "endRevision: " ).append( status.getEndRevision() );
+    msg.append( "toString: " ).append( status.toString() );
     return msg.toString();
   }
 

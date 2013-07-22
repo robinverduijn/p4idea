@@ -5,7 +5,8 @@ import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.server.IServer;
 import p4idea.P4Logger;
-import p4idea.cache.*;
+import p4idea.cache.ICache;
+import p4idea.cache.ICaches;
 import p4idea.cache.impl.NonCachingIFileSpecCache;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public class CachingIServer extends DelegatingIServer
   public CachingIServer( IServer server )
   {
     super( server );
-    _openedFilesCache = new LoggingICacheDecorator( new NonCachingIFileSpecCache( "p4OpenedCache" ) );
+    _openedFilesCache = new NonCachingIFileSpecCache( "p4OpenedCache" );
   }
 
   public IClient getClient( String s ) throws ConnectionException, RequestException, AccessException
@@ -61,7 +62,6 @@ public class CachingIServer extends DelegatingIServer
     @Override
     public List<IFileSpec> invokeOn( List<IFileSpec> list ) throws ConnectionException, AccessException
     {
-      P4Logger.getInstance().log( "Making a P4.getOpenedFiles() call" );
       return _server.getOpenedFiles( list, _allClients, _clientName, _maxFiles, _changeListId );
     }
   }
