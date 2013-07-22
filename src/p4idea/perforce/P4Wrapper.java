@@ -12,7 +12,6 @@ import com.perforce.p4java.server.*;
 import org.jetbrains.annotations.NotNull;
 import p4idea.FileLists;
 import p4idea.P4Logger;
-import p4idea.cache.CachingIServer;
 import p4idea.ui.UserInput;
 import p4idea.vcs.PerforceVcs;
 
