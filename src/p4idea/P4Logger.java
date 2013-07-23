@@ -5,9 +5,6 @@ import com.perforce.p4java.core.file.IFileSpec;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class P4Logger
 {
@@ -36,13 +33,14 @@ public class P4Logger
   {
     StringBuilder msg = new StringBuilder();
     msg.append( "action: " ).append( status.getAction() ).append( ", " );
+    msg.append( "otherAction: " ).append( status.getOtherAction() ).append( ", " );
     msg.append( "depotPath: " ).append( status.getDepotPathString() ).append( ", " );
     msg.append( "localPath: " ).append( status.getLocalPathString() ).append( ", " );
     msg.append( "clientPath: " ).append( status.getClientPathString() ).append( ", " );
     msg.append( "originalPath: " ).append( status.getOriginalPathString() ).append( ", " );
     msg.append( "changelist: " ).append( status.getChangelistId() ).append( ", " );
     msg.append( "startRevision: " ).append( status.getStartRevision() ).append( ", " );
-    msg.append( "endRevision: " ).append( status.getEndRevision() );
+    msg.append( "endRevision: " ).append( status.getEndRevision() ).append( ", " );
     msg.append( "toString: " ).append( status.toString() );
     return msg.toString();
   }
@@ -59,16 +57,6 @@ public class P4Logger
     {
       e.printStackTrace( pw );
       return sw.toString();
-    }
-  }
-
-  public void displayList( String message, List<IFileSpec> list )
-  {
-    checkNotNull( list );
-    log( message );
-    for ( IFileSpec spec : list )
-    {
-      log( String.format( "- %s", spec.getPreferredPathString() ) );
     }
   }
 }

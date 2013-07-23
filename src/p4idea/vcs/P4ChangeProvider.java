@@ -1,48 +1,42 @@
 package p4idea.vcs;
 
+import com.google.common.collect.Lists;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vcs.FilePath;
-import com.intellij.openapi.vcs.VcsException;
+import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.changes.*;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.perforce.p4java.core.file.IFileSpec;
-import com.perforce.p4java.exception.P4JavaException;
+import com.perforce.p4java.exception.*;
+import com.perforce.p4java.impl.generic.core.file.FileSpec;
 import p4idea.P4Logger;
 import p4idea.perforce.P4Wrapper;
 
+import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
 public class P4ChangeProvider implements ChangeProvider
 {
-  private final Project _project;
+  private final P4ChangeCollector _collector;
 
   public P4ChangeProvider( Project project )
   {
-    _project = project;
+    _collector = new P4ChangeCollector( project );
   }
 
   @Override
   public void getChanges( VcsDirtyScope dirtyScope, ChangelistBuilder builder, ProgressIndicator progress,
                           ChangeListManagerGate addGate ) throws VcsException
   {
-    final P4ChangeCollector collector = new P4ChangeCollector( _project );
+    final Collection<Change> changes = _collector.collectChanges( dirtyScope );
 
-    final Collection<Change> changes = collector.collectChanges( dirtyScope );
-    final Collection<FilePath> unversionedFiles = collector.getUnversionedFiles();
-
-    doAddFiles( collector.getFilesToAdd() );
-    doDeleteFiles( collector.getFilesToDelete() );
-    doRevertFiles( unversionedFiles );
+    changes.addAll( addFiles( _collector.getFilesToAdd() ) );
+    changes.addAll( deleteFiles( _collector.getFilesToDelete() ) );
 
     for ( Change change : changes )
     {
       builder.processChange( change, PerforceVcs.getKey() );
-    }
-    for ( FilePath path : unversionedFiles )
-    {
-      builder.processUnversionedFile( path.getVirtualFile() );
     }
   }
 
@@ -63,11 +57,12 @@ public class P4ChangeProvider implements ChangeProvider
     }
   }
 
-  private void doAddFiles( List<FilePath> files ) throws VcsException
+  private Collection<Change> addFiles( Collection<FilePath> files ) throws VcsException
   {
+    final Collection<Change> changes = Lists.newArrayList();
     if ( files.isEmpty() )
     {
-      return;
+      return changes;
     }
     try
     {
@@ -77,6 +72,8 @@ public class P4ChangeProvider implements ChangeProvider
         String path = file.getClientPathString();
         if ( null != path )
         {
+          FilePath filePath = new FilePathImpl( new File( path ), false );
+          changes.add( _collector.getUnversionedAdd( filePath ) );
           P4Logger.getInstance().log( String.format( "Opened for add: %s", path ) );
         }
       }
@@ -85,44 +82,23 @@ public class P4ChangeProvider implements ChangeProvider
     {
       P4Wrapper.getP4().handleP4Exception( "Error adding files", e );
     }
+    return changes;
   }
 
-  private void doDeleteFiles( List<FilePath> files ) throws VcsException
+  private Collection<Change> deleteFiles( Collection<FilePath> files ) throws VcsException
   {
+    final Collection<Change> changes = Lists.newArrayList();
     if ( files.isEmpty() )
     {
-      return;
+      return changes;
     }
     try
     {
-      P4Wrapper p4 = P4Wrapper.getP4();
-      List<IFileSpec> fileSpecs = p4.getHave( files );
-      p4.revert( fileSpecs, true );
-      Collection<IFileSpec> deleted = p4.openForDelete( files );
-      for ( IFileSpec file : deleted )
-      {
-        String path = file.getClientPathString();
-        if ( null != path )
-        {
-          P4Logger.getInstance().log( String.format( "Opened for delete: %s", path ) );
-        }
-      }
-    }
-    catch ( P4JavaException e )
-    {
-      P4Wrapper.getP4().handleP4Exception( "Error deleting files", e );
-    }
-  }
+      final P4Wrapper p4 = P4Wrapper.getP4();
 
-  private void doRevertFiles( Collection<FilePath> files ) throws VcsException
-  {
-    if ( files.isEmpty() )
-    {
-      return;
-    }
-    try
-    {
-      Collection<IFileSpec> reverted = P4Wrapper.getP4().revert( files, true );
+      // First, revert any files which may currently be open (this also deals with files to delete which were
+      // temporarily opened for edit for the duration of this action by P4EditFileProvider
+      Collection<IFileSpec> reverted = p4.revert( p4.getOpenFiles( files ), true );
       for ( IFileSpec file : reverted )
       {
         String path = file.getClientPathString();
@@ -131,10 +107,38 @@ public class P4ChangeProvider implements ChangeProvider
           P4Logger.getInstance().log( String.format( "Reverted: %s", path ) );
         }
       }
+
+      // Then, perform a P4 delete on the remainder as they must be versioned
+      Collection<IFileSpec> deleted = p4.openForDelete( filterDeletableFiles( files ) );
+      for ( IFileSpec file : deleted )
+      {
+        String path = file.getClientPathString();
+        if ( null != path )
+        {
+          FilePath filePath = new FilePathImpl( new File( path ), false );
+          changes.add( _collector.getVersionedDelete( filePath, file ) );
+          P4Logger.getInstance().log( String.format( "Opened for delete: %s", path ) );
+        }
+      }
     }
     catch ( P4JavaException e )
     {
-      P4Wrapper.getP4().handleP4Exception( "Error reverting files", e );
+      P4Wrapper.getP4().handleP4Exception( "Error deleting files", e );
     }
+    return changes;
+  }
+
+  private List<IFileSpec> filterDeletableFiles( Collection<FilePath> files ) throws ConnectionException,
+      AccessException
+  {
+    List<IFileSpec> deletable = Lists.newArrayList();
+    for ( IFileSpec fileSpec : P4Wrapper.getP4().getHave( files ) )
+    {
+      if ( null != fileSpec.getClientPathString() )
+      {
+        deletable.add( new FileSpec( fileSpec.getClientPathString() ) );
+      }
+    }
+    return deletable;
   }
 }

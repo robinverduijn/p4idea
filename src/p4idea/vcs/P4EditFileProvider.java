@@ -23,8 +23,7 @@ public class P4EditFileProvider implements EditFileProvider
         String path = file.getClientPathString();
         if ( null != path )
         {
-          P4Logger logger = P4Logger.getInstance();
-          logger.log( String.format( "Open for edit: %s %s", path, logger.getP4DebugStatus( file ) ) );
+          P4Logger.getInstance().log( String.format( "Open for edit: %s", path ) );
         }
       }
     }

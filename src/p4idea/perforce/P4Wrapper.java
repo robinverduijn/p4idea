@@ -304,11 +304,10 @@ public class P4Wrapper
     }
   }
 
-  public Collection<IFileSpec> openForDelete( Collection<FilePath> files ) throws ConnectionException,
+  public Collection<IFileSpec> openForDelete( List<IFileSpec> fileSpecs ) throws ConnectionException,
       AccessException
   {
-    List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
-    if ( files.isEmpty() )
+    if ( fileSpecs.isEmpty() )
     {
       return fileSpecs;
     }
@@ -325,9 +324,15 @@ public class P4Wrapper
 
   public List<IFileSpec> getOpenFiles() throws ConnectionException, AccessException
   {
+    Collection<FilePath> files = Lists.newArrayList();
+    return getOpenFiles( files );
+  }
+
+  public List<IFileSpec> getOpenFiles( Collection<FilePath> files ) throws ConnectionException, AccessException
+  {
     try
     {
-      final List<IFileSpec> fileSpecs = Lists.newArrayList();
+      final List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
       return getP4Server().getOpenedFiles( fileSpecs, false, _settings.getP4client(), -1, -1 );
     }
     finally
@@ -369,6 +374,11 @@ public class P4Wrapper
   public List<IFileSpec> getHave( Collection<FilePath> files ) throws ConnectionException, AccessException
   {
     List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
+    return getHave( fileSpecs );
+  }
+
+  public List<IFileSpec> getHave( List<IFileSpec> fileSpecs ) throws ConnectionException, AccessException
+  {
     try
     {
       IClient client = getCurrentClient();
@@ -378,13 +388,6 @@ public class P4Wrapper
     {
       attemptDisconnect();
     }
-  }
-
-  public Collection<IFileSpec> revert( Collection<FilePath> files, boolean quiet ) throws ConnectionException,
-      AccessException
-  {
-    List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
-    return revert( fileSpecs, quiet );
   }
 
   public Collection<IFileSpec> revert( List<IFileSpec> fileSpecs, boolean quiet ) throws ConnectionException,

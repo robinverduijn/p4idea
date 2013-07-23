@@ -12,23 +12,24 @@ import p4idea.perforce.P4Ignore;
 import p4idea.perforce.P4Wrapper;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
 public class P4ChangeCollector
 {
   private final Project _project;
   private final P4Ignore _p4ignore;
   private final Collection<Change> _changes;
-  private final Collection<Change> _localChanges;
-  private final Collection<FilePath> _unversionedFiles;
+  private final Collection<FilePath> _unversionedAdditions;
+  private final Collection<FilePath> _unversionedDeletions;
 
   public P4ChangeCollector( Project project )
   {
     _project = project;
     _p4ignore = new P4Ignore();
     _changes = Lists.newArrayList();
-    _localChanges = Lists.newArrayList();
-    _unversionedFiles = Lists.newArrayList();
+    _unversionedAdditions = Lists.newArrayList();
+    _unversionedDeletions = Lists.newArrayList();
   }
 
   public Collection<Change> collectChanges( VcsDirtyScope dirtyScope )
@@ -63,11 +64,11 @@ public class P4ChangeCollector
         {
           if ( file.exists() )
           {
-            _localChanges.add( getUnversionedAdd( path ) );
+            _unversionedAdditions.add( path );
           }
           else
           {
-            _unversionedFiles.add( path );
+            _unversionedDeletions.add( path );
           }
         }
         else
@@ -82,8 +83,6 @@ public class P4ChangeCollector
         throw new VcsException( String.format( "Unable to determine local path for %s", info ) );
       }
     }
-
-    _changes.addAll( _localChanges );
   }
 
   private void processOpenP4Files() throws VcsException
@@ -102,25 +101,30 @@ public class P4ChangeCollector
       {
         String pathStr = file.getLocalPathString();
         FilePath path = new FilePathImpl( new File( pathStr ), false );
-        if ( _unversionedFiles.contains( path ) )
-        {
-          // Ignore unversioned files here since they override the slightly staler data which came back from P4;
-          // otherwise our local changes won't take effect.
-          continue;
-        }
         switch ( file.getAction() )
         {
           case ADD:
+            _unversionedAdditions.remove( path );
             _changes.add( getVersionedAdd( path, file ) );
+            break;
+          case BRANCH:
+            _unversionedAdditions.remove( path );
+            _changes.add( getVersionedBranch( path, file ) );
             break;
           case EDIT:
             _changes.add( getVersionedEdit( path, file ) );
             break;
           case DELETE:
+            _unversionedDeletions.remove( path );
             _changes.add( getVersionedDelete( path, file ) );
+            break;
+          case INTEGRATE:
+            _changes.add( getVersionedIntegrate( path, file ) );
             break;
           default:
             P4Logger.getInstance().log( String.format( "Unknown file action: %s for %s", file.getAction(), file ) );
+            _changes.add( getVersionedUnknown( path, file ) );
+            break;
         }
       }
     }
@@ -136,10 +140,16 @@ public class P4ChangeCollector
     return new Change( null, after, FileStatus.MODIFIED );
   }
 
-  private Change getVersionedDelete( FilePath path, IFileSpec file )
+  protected Change getVersionedDelete( FilePath path, IFileSpec file )
   {
     ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
     return new Change( null, after, FileStatus.DELETED );
+  }
+
+  protected Change getUnversionedAdd( FilePath path )
+  {
+    ContentRevision after = new P4ContentRevision( _project, path, -1 );
+    return new Change( null, after, FileStatus.ADDED );
   }
 
   private Change getVersionedAdd( FilePath path, IFileSpec file )
@@ -148,40 +158,31 @@ public class P4ChangeCollector
     return new Change( null, after, FileStatus.ADDED );
   }
 
-  private Change getUnversionedAdd( FilePath path )
+  private Change getVersionedBranch( FilePath path, IFileSpec file )
   {
-    ContentRevision after = new P4ContentRevision( _project, path, -1 );
-    return new Change( null, after, FileStatus.ADDED );
+    ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
+    return new Change( null, after, FileStatus.MERGE );
   }
 
-  public List<FilePath> getFilesToAdd()
+  private Change getVersionedIntegrate( FilePath path, IFileSpec file )
   {
-    ArrayList<FilePath> files = Lists.newArrayList();
-    for ( Change change : _localChanges )
-    {
-      if ( change.getFileStatus() == FileStatus.ADDED )
-      {
-        files.add( change.getAfterRevision().getFile() );
-      }
-    }
-    return files;
+    ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
+    return new Change( null, after, FileStatus.MERGE );
   }
 
-  public List<FilePath> getFilesToDelete()
+  private Change getVersionedUnknown( FilePath path, IFileSpec file )
   {
-    ArrayList<FilePath> files = Lists.newArrayList();
-    for ( Change change : _localChanges )
-    {
-      if ( change.getFileStatus() == FileStatus.DELETED )
-      {
-        files.add( change.getAfterRevision().getFile() );
-      }
-    }
-    return files;
+    ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
+    return new Change( null, after, FileStatus.UNKNOWN );
   }
 
-  public Collection<FilePath> getUnversionedFiles()
+  public Collection<FilePath> getFilesToAdd()
   {
-    return _unversionedFiles;
+    return _unversionedAdditions;
+  }
+
+  public Collection<FilePath> getFilesToDelete()
+  {
+    return _unversionedDeletions;
   }
 }
