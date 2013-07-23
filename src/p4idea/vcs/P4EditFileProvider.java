@@ -3,6 +3,7 @@ package p4idea.vcs;
 import com.intellij.openapi.vcs.EditFileProvider;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.perforce.p4java.core.file.FileSpecOpStatus;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.P4JavaException;
 import p4idea.P4Logger;
@@ -23,7 +24,10 @@ public class P4EditFileProvider implements EditFileProvider
         String path = file.getClientPathString();
         if ( null != path )
         {
-          P4Logger.getInstance().log( String.format( "Open for edit: %s", path ) );
+          if ( file.getOpStatus() == FileSpecOpStatus.VALID )
+          {
+            P4Logger.getInstance().log( String.format( "Open for edit: %s", path ) );
+          }
         }
       }
     }

@@ -6,6 +6,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.changes.*;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.perforce.p4java.core.file.FileSpecOpStatus;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.impl.generic.core.file.FileSpec;
@@ -18,21 +19,22 @@ import java.util.List;
 
 public class P4ChangeProvider implements ChangeProvider
 {
-  private final P4ChangeCollector _collector;
+  private final Project _project;
 
   public P4ChangeProvider( Project project )
   {
-    _collector = new P4ChangeCollector( project );
+    _project = project;
   }
 
   @Override
   public void getChanges( VcsDirtyScope dirtyScope, ChangelistBuilder builder, ProgressIndicator progress,
                           ChangeListManagerGate addGate ) throws VcsException
   {
-    final Collection<Change> changes = _collector.collectChanges( dirtyScope );
+    final P4ChangeCollector collector = new P4ChangeCollector( _project );
+    final Collection<Change> changes = collector.collectChanges( dirtyScope );
 
-    changes.addAll( addFiles( _collector.getFilesToAdd() ) );
-    changes.addAll( deleteFiles( _collector.getFilesToDelete() ) );
+    changes.addAll( addFiles( collector ) );
+    changes.addAll( deleteFiles( collector ) );
 
     for ( Change change : changes )
     {
@@ -57,8 +59,9 @@ public class P4ChangeProvider implements ChangeProvider
     }
   }
 
-  private Collection<Change> addFiles( Collection<FilePath> files ) throws VcsException
+  private Collection<Change> addFiles( P4ChangeCollector collector ) throws VcsException
   {
+    final Collection<FilePath> files = collector.getFilesToAdd();
     final Collection<Change> changes = Lists.newArrayList();
     if ( files.isEmpty() )
     {
@@ -72,9 +75,12 @@ public class P4ChangeProvider implements ChangeProvider
         String path = file.getClientPathString();
         if ( null != path )
         {
-          FilePath filePath = new FilePathImpl( new File( path ), false );
-          changes.add( _collector.getUnversionedAdd( filePath ) );
-          P4Logger.getInstance().log( String.format( "Opened for add: %s", path ) );
+          if ( file.getOpStatus() == FileSpecOpStatus.VALID )
+          {
+            FilePath filePath = new FilePathImpl( new File( path ), false );
+            changes.add( collector.getUnversionedAdd( filePath ) );
+            P4Logger.getInstance().log( String.format( "Opened for add: %s", path ) );
+          }
         }
       }
     }
@@ -85,8 +91,9 @@ public class P4ChangeProvider implements ChangeProvider
     return changes;
   }
 
-  private Collection<Change> deleteFiles( Collection<FilePath> files ) throws VcsException
+  private Collection<Change> deleteFiles( P4ChangeCollector collector ) throws VcsException
   {
+    final Collection<FilePath> files = collector.getFilesToDelete();
     final Collection<Change> changes = Lists.newArrayList();
     if ( files.isEmpty() )
     {
@@ -115,9 +122,12 @@ public class P4ChangeProvider implements ChangeProvider
         String path = file.getClientPathString();
         if ( null != path )
         {
-          FilePath filePath = new FilePathImpl( new File( path ), false );
-          changes.add( _collector.getVersionedDelete( filePath, file ) );
-          P4Logger.getInstance().log( String.format( "Opened for delete: %s", path ) );
+          if ( file.getOpStatus() == FileSpecOpStatus.VALID )
+          {
+            FilePath filePath = new FilePathImpl( new File( path ), false );
+            changes.add( collector.getVersionedDelete( filePath, file ) );
+            P4Logger.getInstance().log( String.format( "Opened for delete: %s", path ) );
+          }
         }
       }
     }
