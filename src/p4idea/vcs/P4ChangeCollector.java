@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.changes.*;
+import com.perforce.p4java.core.file.FileSpecOpStatus;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
 import p4idea.FileLists;
@@ -12,8 +13,7 @@ import p4idea.perforce.P4Ignore;
 import p4idea.perforce.P4Wrapper;
 
 import java.io.File;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class P4ChangeCollector
 {
@@ -35,6 +35,9 @@ public class P4ChangeCollector
   public Collection<Change> collectChanges( VcsDirtyScope dirtyScope )
       throws VcsException
   {
+    _changes.clear();
+    _unversionedAdditions.clear();
+    _unversionedDeletions.clear();
     try
     {
       if ( !dirtyScope.getDirtyFiles().isEmpty() )
@@ -64,7 +67,10 @@ public class P4ChangeCollector
         {
           if ( file.exists() )
           {
-            _unversionedAdditions.add( path );
+            if ( isLocal( path ) )
+            {
+              _unversionedAdditions.add( path );
+            }
           }
           else
           {
@@ -83,6 +89,19 @@ public class P4ChangeCollector
         throw new VcsException( String.format( "Unable to determine local path for %s", info ) );
       }
     }
+  }
+
+  private boolean isLocal( FilePath filePath ) throws ConnectionException, AccessException
+  {
+    boolean result = false;
+    for ( IFileSpec status : P4Wrapper.getP4().getHave( Arrays.asList( filePath ) ) )
+    {
+      if ( status.getOpStatus() != FileSpecOpStatus.VALID )
+      {
+        result = true;
+      }
+    }
+    return result;
   }
 
   private void processOpenP4Files() throws VcsException
