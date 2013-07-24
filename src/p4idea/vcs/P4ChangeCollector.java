@@ -130,8 +130,11 @@ public class P4ChangeCollector
         switch ( file.getAction() )
         {
           case ADD:
-            _unversionedAdditions.remove( path );
-            _changes.add( getVersionedAdd( path, file ) );
+            if ( !_unversionedDeletions.contains( path ) )
+            {
+              _unversionedAdditions.remove( path );
+              _changes.add( getVersionedAdd( path, file ) );
+            }
             break;
           case BRANCH:
             _unversionedAdditions.remove( path );
