@@ -1,5 +1,6 @@
 package p4idea.perforce;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.intellij.openapi.vcs.FilePath;
 import com.perforce.p4java.exception.AccessException;
@@ -13,9 +14,10 @@ import java.util.*;
 
 public class P4Ignore
 {
-  public Collection<FilePath> p4ignore( Collection<FilePath> files ) throws ConnectionException, AccessException
+  public Collection<FilePath> getUnignored( Collection<FilePath> files ) throws ConnectionException, AccessException
   {
-    Iterator<FilePath> iter = files.iterator();
+    Collection<FilePath> unignored = Lists.newArrayList( files );
+    Iterator<FilePath> iter = unignored.iterator();
     while ( iter.hasNext() )
     {
       File file = iter.next().getIOFile();
@@ -28,7 +30,25 @@ public class P4Ignore
         }
       }
     }
-    return files;
+    return unignored;
+  }
+
+  public Collection<FilePath> getIgnored( Collection<FilePath> files ) throws ConnectionException, AccessException
+  {
+    Collection<FilePath> ignored = Lists.newArrayList();
+    for ( FilePath filePath : files )
+    {
+      File file = filePath.getIOFile();
+      File p4ignore = findP4Ignore( file );
+      if ( null != p4ignore )
+      {
+        if ( getsIgnored( p4ignore, file ) )
+        {
+          ignored.add( filePath );
+        }
+      }
+    }
+    return ignored;
   }
 
   private File findP4Ignore( File file ) throws ConnectionException, AccessException

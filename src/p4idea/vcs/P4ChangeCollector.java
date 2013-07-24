@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.changes.*;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.perforce.p4java.core.file.FileSpecOpStatus;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
@@ -22,6 +23,7 @@ public class P4ChangeCollector
   private final Collection<Change> _changes;
   private final Collection<FilePath> _unversionedAdditions;
   private final Collection<FilePath> _unversionedDeletions;
+  private final Collection<VirtualFile> _unversionedFiles;
 
   public P4ChangeCollector( Project project )
   {
@@ -30,6 +32,7 @@ public class P4ChangeCollector
     _changes = Lists.newArrayList();
     _unversionedAdditions = Lists.newArrayList();
     _unversionedDeletions = Lists.newArrayList();
+    _unversionedFiles = Lists.newArrayList();
   }
 
   public Collection<Change> collectChanges( VcsDirtyScope dirtyScope )
@@ -43,6 +46,10 @@ public class P4ChangeCollector
       if ( !dirtyScope.getDirtyFiles().isEmpty() )
       {
         processLocalFiles( dirtyScope.getDirtyFiles() );
+        for ( FilePath filePath : _p4ignore.getIgnored( dirtyScope.getDirtyFiles() ) )
+        {
+          _unversionedFiles.add( filePath.getVirtualFile() );
+        }
       }
       processOpenP4Files();
     }
@@ -56,7 +63,7 @@ public class P4ChangeCollector
   private void processLocalFiles( Collection<FilePath> dirtyFiles ) throws ConnectionException, AccessException,
       VcsException
   {
-    Collection<FilePath> localFiles = _p4ignore.p4ignore( dirtyFiles );
+    Collection<FilePath> localFiles = _p4ignore.getUnignored( dirtyFiles );
     for ( IFileSpec status : P4Wrapper.getP4().getWhere( localFiles ) )
     {
       if ( null != status.getLocalPathString() )
@@ -203,5 +210,10 @@ public class P4ChangeCollector
   public Collection<FilePath> getFilesToDelete()
   {
     return _unversionedDeletions;
+  }
+
+  public Collection<VirtualFile> getUnversionedFiles()
+  {
+    return _unversionedFiles;
   }
 }

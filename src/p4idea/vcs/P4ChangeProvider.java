@@ -35,6 +35,10 @@ public class P4ChangeProvider implements ChangeProvider
 
     changes.addAll( addFiles( collector ) );
     changes.addAll( deleteFiles( collector ) );
+    for ( VirtualFile file : collector.getUnversionedFiles() )
+    {
+      builder.processUnversionedFile( file );
+    }
 
     for ( Change change : changes )
     {
