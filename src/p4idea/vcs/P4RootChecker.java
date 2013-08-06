@@ -11,7 +11,7 @@ import p4idea.perforce.P4Wrapper;
 import java.util.Collection;
 import java.util.Collections;
 
-public class P4RootChecker implements VcsRootChecker
+class P4RootChecker implements VcsRootChecker
 {
   @NotNull
   @Override

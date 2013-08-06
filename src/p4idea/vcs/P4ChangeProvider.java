@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.Collection;
 import java.util.List;
 
-public class P4ChangeProvider implements ChangeProvider
+class P4ChangeProvider implements ChangeProvider
 {
   private final Project _project;
 
@@ -109,7 +109,7 @@ public class P4ChangeProvider implements ChangeProvider
 
       // First, revert any files which may currently be open (this also deals with files to delete which were
       // temporarily opened for edit for the duration of this action by P4EditFileProvider
-      Collection<IFileSpec> reverted = p4.revert( p4.getOpenFiles( files ), true );
+      Collection<IFileSpec> reverted = p4.revert( p4.getOpenFiles( files ) );
       for ( IFileSpec file : reverted )
       {
         String path = file.getClientPathString();

@@ -15,11 +15,11 @@ import java.io.InputStream;
 import java.util.Date;
 import java.util.List;
 
-public class DelegatingIClient implements IClient
+class DelegatingIClient implements IClient
 {
-  protected final IClient _client;
+  final IClient _client;
 
-  public DelegatingIClient( IClient client )
+  DelegatingIClient( IClient client )
   {
     _client = client;
   }

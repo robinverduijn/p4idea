@@ -50,7 +50,7 @@ public class P4Logger
     return buildException( new Exception( msg ) );
   }
 
-  public String buildException( Exception e )
+  String buildException( Exception e )
   {
     StringWriter sw = new StringWriter();
     try ( PrintWriter pw = new PrintWriter( sw ) )

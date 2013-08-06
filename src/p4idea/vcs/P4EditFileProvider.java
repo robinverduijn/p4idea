@@ -11,7 +11,7 @@ import p4idea.perforce.P4Wrapper;
 
 import java.util.Collection;
 
-public class P4EditFileProvider implements EditFileProvider
+class P4EditFileProvider implements EditFileProvider
 {
   @Override
   public void editFiles( VirtualFile[] files ) throws VcsException

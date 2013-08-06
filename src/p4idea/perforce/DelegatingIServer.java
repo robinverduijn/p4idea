@@ -15,11 +15,11 @@ import java.io.InputStream;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.*;
 
-public class DelegatingIServer implements IServer
+class DelegatingIServer implements IServer
 {
-  protected final IServer _server;
+  final IServer _server;
 
-  public DelegatingIServer( IServer server )
+  DelegatingIServer( IServer server )
   {
     _server = server;
   }

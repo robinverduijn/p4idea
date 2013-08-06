@@ -16,7 +16,7 @@ import p4idea.perforce.P4Wrapper;
 import java.io.File;
 import java.util.*;
 
-public class P4ChangeCollector
+class P4ChangeCollector
 {
   private final Project _project;
   private final P4Ignore _p4ignore;
@@ -169,13 +169,13 @@ public class P4ChangeCollector
     return new Change( null, after, FileStatus.MODIFIED );
   }
 
-  protected Change getVersionedDelete( FilePath path, IFileSpec file )
+  Change getVersionedDelete( FilePath path, IFileSpec file )
   {
     ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
     return new Change( null, after, FileStatus.DELETED );
   }
 
-  protected Change getUnversionedAdd( FilePath path )
+  Change getUnversionedAdd( FilePath path )
   {
     ContentRevision after = new P4ContentRevision( _project, path, -1 );
     return new Change( null, after, FileStatus.ADDED );

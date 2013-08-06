@@ -11,7 +11,7 @@ import com.perforce.p4java.impl.generic.core.file.FileSpec;
 import java.util.Arrays;
 import java.util.List;
 
-public class P4Changelists extends P4Wrapper
+class P4Changelists extends P4Wrapper
 {
   public IChangelist createChangelist( String description ) throws P4JavaException
   {
@@ -37,7 +37,7 @@ public class P4Changelists extends P4Wrapper
     revertChangelist( changelist.getId() );
   }
 
-  public void revertChangelist( int changelist ) throws ConnectionException, RequestException,
+  void revertChangelist( int changelist ) throws ConnectionException, RequestException,
       AccessException
   {
     try

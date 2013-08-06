@@ -9,7 +9,7 @@ abstract public class AbstractICache<T> implements ICache<T>
   private final String _name;
 
   @SuppressWarnings( "UnusedParameters" )
-  public AbstractICache( final String name, final int initialSize, final long ttl )
+  AbstractICache( final String name, final int initialSize, final long ttl )
   {
     checkNotNull( name );
     _name = name;

@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
-public class P4ContentRevision implements ContentRevision
+class P4ContentRevision implements ContentRevision
 {
   private final Project _project;
   private final FilePath _path;

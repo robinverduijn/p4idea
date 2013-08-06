@@ -10,7 +10,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ICaches
 {
-  public static <T> void putEntries( ICache<T> cache, Collection<T> entries )
+  private static <T> void putEntries( ICache<T> cache, Collection<T> entries )
   {
     checkNotNull( entries );
     for ( T entry : entries )
@@ -37,7 +37,7 @@ public class ICaches
     return alreadyCached;
   }
 
-  public static <T> List<T> filterCachedEntries( ICache<T> cache, List<T> input )
+  private static <T> List<T> filterCachedEntries( ICache<T> cache, List<T> input )
   {
     checkNotNull( input );
     List<T> cachedEntries = Lists.newArrayList();

@@ -58,7 +58,7 @@ public class P4Wrapper
    * (optional null) password is specified. The caller is responsible for calling {@link IServer#disconnect()} on the
    * returned connection when it is no longer needed.
    */
-  protected IServer getP4Server() throws AccessException, ConnectionException
+  IServer getP4Server() throws AccessException, ConnectionException
   {
     try
     {
@@ -107,7 +107,7 @@ public class P4Wrapper
     disconnect( true );
   }
 
-  protected void attemptDisconnect() throws ConnectionException, AccessException
+  void attemptDisconnect() throws ConnectionException, AccessException
   {
     disconnect( false );
   }
@@ -132,7 +132,7 @@ public class P4Wrapper
     }
   }
 
-  public File getP4Root() throws ConnectionException, AccessException
+  File getP4Root() throws ConnectionException, AccessException
   {
     if ( null == _p4root )
     {
@@ -213,7 +213,7 @@ public class P4Wrapper
     return files;
   }
 
-  protected void processResult( String result )
+  void processResult( String result )
   {
     if ( null != result )
     {
@@ -377,7 +377,7 @@ public class P4Wrapper
     return getHave( fileSpecs );
   }
 
-  public List<IFileSpec> getHave( List<IFileSpec> fileSpecs ) throws ConnectionException, AccessException
+  List<IFileSpec> getHave( List<IFileSpec> fileSpecs ) throws ConnectionException, AccessException
   {
     try
     {
@@ -390,7 +390,7 @@ public class P4Wrapper
     }
   }
 
-  public Collection<IFileSpec> revert( List<IFileSpec> fileSpecs, boolean quiet ) throws ConnectionException,
+  public Collection<IFileSpec> revert( List<IFileSpec> fileSpecs ) throws ConnectionException,
       AccessException
   {
     if ( fileSpecs.isEmpty() )
@@ -400,12 +400,7 @@ public class P4Wrapper
     try
     {
       IClient client = getCurrentClient();
-      List<IFileSpec> revertedFiles = client.revertFiles( fileSpecs, false, -1, false, false );
-      if ( quiet )
-      {
-        return revertedFiles;
-      }
-      return processResults( revertedFiles );
+      return client.revertFiles( fileSpecs, false, -1, false, false );
     }
     finally
     {
