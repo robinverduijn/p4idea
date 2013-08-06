@@ -6,6 +6,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.perforce.p4java.core.file.FileSpecOpStatus;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.P4JavaException;
+import p4idea.FileLists;
 import p4idea.P4Logger;
 import p4idea.perforce.P4Wrapper;
 
@@ -18,7 +19,7 @@ class P4EditFileProvider implements EditFileProvider
   {
     try
     {
-      Collection<IFileSpec> opened = P4Wrapper.getP4().openForEdit( files );
+      Collection<IFileSpec> opened = P4Wrapper.getP4().openForEdit( FileLists.fromVirtualFiles( files ) );
       for ( IFileSpec file : opened )
       {
         String path = file.getClientPathString();

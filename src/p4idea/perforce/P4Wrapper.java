@@ -1,23 +1,21 @@
 package p4idea.perforce;
 
 import com.google.common.collect.Lists;
-import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.VcsException;
-import com.intellij.openapi.vfs.VirtualFile;
 import com.perforce.p4java.client.IClient;
+import com.perforce.p4java.core.CoreFactory;
+import com.perforce.p4java.core.IChangelist;
 import com.perforce.p4java.core.file.FileSpecOpStatus;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.server.*;
 import org.jetbrains.annotations.NotNull;
-import p4idea.FileLists;
 import p4idea.P4Logger;
 import p4idea.ui.UserInput;
 import p4idea.vcs.PerforceVcs;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import java.util.Collection;
 import java.util.List;
 
 public class P4Wrapper
@@ -267,10 +265,9 @@ public class P4Wrapper
     }
   }
 
-  public Collection<IFileSpec> openForEdit( VirtualFile[] files ) throws P4JavaException
+  public List<IFileSpec> openForEdit( List<IFileSpec> fileSpecs ) throws P4JavaException
   {
-    List<IFileSpec> fileSpecs = FileLists.fromVirtualFiles( files );
-    if ( files.length <= 0 )
+    if ( fileSpecs.isEmpty() )
     {
       return fileSpecs;
     }
@@ -285,11 +282,10 @@ public class P4Wrapper
     }
   }
 
-  public Collection<IFileSpec> openForAdd( Collection<FilePath> files ) throws ConnectionException,
+  public List<IFileSpec> openForAdd( List<IFileSpec> fileSpecs ) throws ConnectionException,
       AccessException
   {
-    List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
-    if ( files.isEmpty() )
+    if ( fileSpecs.isEmpty() )
     {
       return fileSpecs;
     }
@@ -304,7 +300,7 @@ public class P4Wrapper
     }
   }
 
-  public Collection<IFileSpec> openForDelete( List<IFileSpec> fileSpecs ) throws ConnectionException,
+  public List<IFileSpec> openForDelete( List<IFileSpec> fileSpecs ) throws ConnectionException,
       AccessException
   {
     if ( fileSpecs.isEmpty() )
@@ -324,15 +320,14 @@ public class P4Wrapper
 
   public List<IFileSpec> getOpenFiles() throws ConnectionException, AccessException
   {
-    Collection<FilePath> files = Lists.newArrayList();
+    List<IFileSpec> files = Lists.newArrayList();
     return getOpenFiles( files );
   }
 
-  public List<IFileSpec> getOpenFiles( Collection<FilePath> files ) throws ConnectionException, AccessException
+  public List<IFileSpec> getOpenFiles( List<IFileSpec> fileSpecs ) throws ConnectionException, AccessException
   {
     try
     {
-      final List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
       return getP4Server().getOpenedFiles( fileSpecs, false, _settings.getP4client(), -1, -1 );
     }
     finally
@@ -341,19 +336,7 @@ public class P4Wrapper
     }
   }
 
-  public Collection<IFileSpec> getWhere( Collection<FilePath> files ) throws ConnectionException, AccessException
-  {
-    List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
-    return doGetWhere( fileSpecs );
-  }
-
-  public List<IFileSpec> getWhere( List<String> files ) throws ConnectionException, AccessException
-  {
-    List<IFileSpec> fileSpecs = FileLists.fromStrings( files );
-    return doGetWhere( fileSpecs );
-  }
-
-  private List<IFileSpec> doGetWhere( List<IFileSpec> fileSpecs ) throws ConnectionException, AccessException
+  public List<IFileSpec> getWhere( List<IFileSpec> fileSpecs ) throws ConnectionException, AccessException
   {
     if ( fileSpecs.isEmpty() )
     {
@@ -371,13 +354,7 @@ public class P4Wrapper
     }
   }
 
-  public List<IFileSpec> getHave( Collection<FilePath> files ) throws ConnectionException, AccessException
-  {
-    List<IFileSpec> fileSpecs = FileLists.fromFilePaths( files );
-    return getHave( fileSpecs );
-  }
-
-  List<IFileSpec> getHave( List<IFileSpec> fileSpecs ) throws ConnectionException, AccessException
+  public List<IFileSpec> getHave( List<IFileSpec> fileSpecs ) throws ConnectionException, AccessException
   {
     try
     {
@@ -390,17 +367,25 @@ public class P4Wrapper
     }
   }
 
-  public Collection<IFileSpec> revert( List<IFileSpec> fileSpecs ) throws ConnectionException,
+  public void revert( List<IFileSpec> fileSpecs ) throws ConnectionException,
       AccessException
   {
     if ( fileSpecs.isEmpty() )
     {
-      return fileSpecs;
+      return;
     }
     try
     {
       IClient client = getCurrentClient();
-      return client.revertFiles( fileSpecs, false, -1, false, false );
+      List<IFileSpec> reverted = client.revertFiles( fileSpecs, false, -1, false, false );
+      for ( IFileSpec file : reverted )
+      {
+        String path = file.getClientPathString();
+        if ( null != path )
+        {
+          P4Logger.getInstance().log( String.format( "Reverted: %s", path ) );
+        }
+      }
     }
     finally
     {
@@ -418,6 +403,38 @@ public class P4Wrapper
     catch ( ConnectionException | AccessException | RequestException e )
     {
       return false;
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
+  }
+
+  public IChangelist createChangelist( List<IFileSpec> fileSpecs, String description ) throws P4JavaException
+  {
+    try
+    {
+      IClient client = getP4Server().getCurrentClient();
+      IChangelist changelist = CoreFactory.createChangelist( client, description, true );
+      P4Logger log = P4Logger.getInstance();
+      log.log( String.format( "Created changelist %d", changelist.getId() ) );
+      processResults( client.reopenFiles( fileSpecs, changelist.getId(), null ) );
+      return changelist;
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
+  }
+
+  public void submitChangelist( IChangelist changelist ) throws ConnectionException, RequestException, AccessException
+  {
+    try
+    {
+      // Not implemented for now
+      //List<IFileSpec> fileSpecs = changelist.submit( false );
+      List<IFileSpec> fileSpecs = changelist.getFiles( false );
+      processResults( fileSpecs );
     }
     finally
     {

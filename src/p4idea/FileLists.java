@@ -12,7 +12,7 @@ import java.util.*;
 
 public class FileLists
 {
-  public static List<IFileSpec> fromVirtualFiles( VirtualFile[] virtualFiles )
+  public static List<IFileSpec> fromVirtualFiles( VirtualFile... virtualFiles )
   {
     List<IFileSpec> fileSpecs = Lists.newArrayList();
     for ( VirtualFile virtualFile : virtualFiles )
@@ -28,16 +28,6 @@ public class FileLists
     for ( FilePath filePath : filePaths )
     {
       fileSpecs.add( new FileSpec( filePath.getPath() ) );
-    }
-    return fileSpecs;
-  }
-
-  public static List<IFileSpec> fromStrings( Collection<String> files )
-  {
-    List<IFileSpec> fileSpecs = Lists.newArrayList();
-    for ( String file : files )
-    {
-      fileSpecs.add( new FileSpec( file ) );
     }
     return fileSpecs;
   }
@@ -82,12 +72,12 @@ public class FileLists
     return null;
   }
 
-  public static List<String> getDepotPaths( List<IFileSpec> fileSpecs )
+  public static List<IFileSpec> getDepotPaths( List<IFileSpec> fileSpecs )
   {
-    final List<String> depotPaths = new ArrayList<>( fileSpecs.size() );
+    final List<IFileSpec> depotPaths = new ArrayList<>( fileSpecs.size() );
     for ( IFileSpec file : fileSpecs )
     {
-      depotPaths.add( file.getDepotPathString() );
+      depotPaths.add( new FileSpec( file.getDepotPathString() ) );
     }
     return depotPaths;
   }

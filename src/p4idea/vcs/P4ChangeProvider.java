@@ -10,6 +10,7 @@ import com.perforce.p4java.core.file.FileSpecOpStatus;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.impl.generic.core.file.FileSpec;
+import p4idea.FileLists;
 import p4idea.P4Logger;
 import p4idea.perforce.P4Wrapper;
 
@@ -73,7 +74,7 @@ class P4ChangeProvider implements ChangeProvider
     }
     try
     {
-      Collection<IFileSpec> added = P4Wrapper.getP4().openForAdd( files );
+      Collection<IFileSpec> added = P4Wrapper.getP4().openForAdd( FileLists.fromFilePaths( files ) );
       for ( IFileSpec file : added )
       {
         String path = file.getClientPathString();
@@ -109,15 +110,7 @@ class P4ChangeProvider implements ChangeProvider
 
       // First, revert any files which may currently be open (this also deals with files to delete which were
       // temporarily opened for edit for the duration of this action by P4EditFileProvider
-      Collection<IFileSpec> reverted = p4.revert( p4.getOpenFiles( files ) );
-      for ( IFileSpec file : reverted )
-      {
-        String path = file.getClientPathString();
-        if ( null != path )
-        {
-          P4Logger.getInstance().log( String.format( "Reverted: %s", path ) );
-        }
-      }
+      p4.revert( p4.getOpenFiles( FileLists.fromFilePaths( files ) ) );
 
       // Then, perform a P4 delete on the remainder as they must be versioned
       Collection<IFileSpec> deleted = p4.openForDelete( filterDeletableFiles( files ) );
@@ -146,7 +139,7 @@ class P4ChangeProvider implements ChangeProvider
       AccessException
   {
     List<IFileSpec> deletable = Lists.newArrayList();
-    for ( IFileSpec fileSpec : P4Wrapper.getP4().getHave( files ) )
+    for ( IFileSpec fileSpec : P4Wrapper.getP4().getHave( FileLists.fromFilePaths( files ) ) )
     {
       if ( null != fileSpec.getClientPathString() )
       {

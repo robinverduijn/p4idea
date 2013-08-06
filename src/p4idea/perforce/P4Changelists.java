@@ -2,7 +2,6 @@ package p4idea.perforce;
 
 import com.google.common.collect.Lists;
 import com.intellij.openapi.vcs.VcsException;
-import com.perforce.p4java.client.IClient;
 import com.perforce.p4java.core.*;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
@@ -13,28 +12,9 @@ import java.util.List;
 
 class P4Changelists extends P4Wrapper
 {
-  public IChangelist createChangelist( String description ) throws P4JavaException
-  {
-    try
-    {
-      IClient client = getP4Server().getCurrentClient();
-      return CoreFactory.createChangelist( client, description, true );
-    }
-    finally
-    {
-      attemptDisconnect();
-    }
-  }
-
   private IChangelist getDefaultChangelist() throws ConnectionException, AccessException, RequestException
   {
     return getP4Server().getChangelist( IChangelist.DEFAULT );
-  }
-
-  public void revertChangelist( IChangelist changelist ) throws ConnectionException, RequestException,
-      AccessException
-  {
-    revertChangelist( changelist.getId() );
   }
 
   void revertChangelist( int changelist ) throws ConnectionException, RequestException,
@@ -44,18 +24,6 @@ class P4Changelists extends P4Wrapper
     {
       String result = getP4Server().deletePendingChangelist( changelist );
       processResult( result );
-    }
-    finally
-    {
-      attemptDisconnect();
-    }
-  }
-
-  public void submitChangelist( IChangelist changelist ) throws ConnectionException, RequestException, AccessException
-  {
-    try
-    {
-      changelist.submit( false );
     }
     finally
     {
