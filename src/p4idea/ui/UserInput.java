@@ -7,7 +7,6 @@ import p4idea.P4Logger;
 import p4idea.perforce.P4Settings;
 import p4idea.perforce.P4Wrapper;
 
-import javax.swing.*;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,20 +56,6 @@ public class UserInput
       }
     }
     return result;
-  }
-
-  public static void displayPerforceInfo( JPanel panel, IServerInfo info )
-  {
-    StringBuilder message = new StringBuilder();
-    message.append( "<html>" );
-    for ( String line : getPerforceInfo( info ) )
-    {
-      message.append( line ).append( "<br>" );
-    }
-    message.append( "</html>" );
-
-    final String title = "Perforce Connection Successful";
-    Messages.showInfoMessage( panel, message.toString(), title );
   }
 
   public static List<String> getPerforceInfo( IServerInfo info )

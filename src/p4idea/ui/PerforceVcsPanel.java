@@ -55,11 +55,6 @@ public class PerforceVcsPanel
 
   public void apply( P4Settings settings ) throws ConfigurationException
   {
-    apply( settings, false );
-  }
-
-  private void apply( P4Settings settings, boolean verbose ) throws ConfigurationException
-  {
     P4Settings current = P4Settings.clone( settings );
 
     settings.setP4port( _p4port.getText() );
@@ -67,7 +62,7 @@ public class PerforceVcsPanel
     settings.setP4client( _p4client.getText() );
     try
     {
-      testSettings( settings, verbose );
+      testSettings( settings );
       settings.apply();
     }
     catch ( ConfigurationException e )
@@ -77,7 +72,7 @@ public class PerforceVcsPanel
     }
   }
 
-  private void testSettings( P4Settings settings, boolean verbose ) throws ConfigurationException
+  private void testSettings( P4Settings settings ) throws ConfigurationException
   {
     if ( settings.isUnset() )
     {
@@ -93,10 +88,6 @@ public class PerforceVcsPanel
       {
         IServerInfo info = settings.verify();
         setStatus( info );
-        if ( verbose )
-        {
-          UserInput.displayPerforceInfo( _rootPanel, info );
-        }
       }
       catch ( AccessException ae )
       {
@@ -159,7 +150,7 @@ public class PerforceVcsPanel
     {
       try
       {
-        apply( new P4Settings(), true );
+        apply( new P4Settings() );
       }
       catch ( ConfigurationException e )
       {
