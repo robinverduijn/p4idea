@@ -6,6 +6,7 @@ import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.changes.ChangeListEditHandler;
 import com.intellij.openapi.vcs.changes.ChangeProvider;
 import com.intellij.openapi.vcs.checkin.CheckinEnvironment;
+import com.intellij.openapi.vcs.rollback.RollbackEnvironment;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.perforce.p4java.exception.AccessException;
@@ -26,6 +27,10 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
   private final P4RootChecker _rootChecker;
   private final P4EditFileProvider _editFileProvider;
   private final P4SettingsValidator _validator;
+  private final P4CheckinEnvironment _checkinEnvironment;
+  private final P4CheckoutProvider _checkoutProvider;
+  private final P4CommittedChangesProvider _committedChangesProvider;
+  private final P4RollbackEnvironment _rollbackEnvironment;
 
   public PerforceVcs( @NotNull Project project )
   {
@@ -36,6 +41,11 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
     _rootChecker = new P4RootChecker();
     _editFileProvider = new P4EditFileProvider();
     _validator = new P4SettingsValidator( project );
+    _checkinEnvironment = new P4CheckinEnvironment();
+    _checkoutProvider = new P4CheckoutProvider();
+    _committedChangesProvider = new P4CommittedChangesProvider();
+    _rollbackEnvironment = new P4RollbackEnvironment();
+
     Instance = this;
   }
 
@@ -164,14 +174,26 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
   @Override
   public CheckinEnvironment getCheckinEnvironment()
   {
-    log( "getCheckinEnvironment()" );
-    return super.getCheckinEnvironment();
+    return _checkinEnvironment;
   }
 
   @Override
   public CheckoutProvider getCheckoutProvider()
   {
-    log( "getCheckoutProvider()" );
-    return super.getCheckoutProvider();
+    return _checkoutProvider;
+  }
+
+  @Nullable
+  @Override
+  public CommittedChangesProvider getCommittedChangesProvider()
+  {
+    return _committedChangesProvider;
+  }
+
+  @Nullable
+  @Override
+  public RollbackEnvironment getRollbackEnvironment()
+  {
+    return _rollbackEnvironment;
   }
 }

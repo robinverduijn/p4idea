@@ -1,7 +1,7 @@
 <idea-plugin version="2">
   <id>net.rvd.idea.p4idea</id>
   <name>Perforce VCS Integration</name>
-  <version>1.0.1</version>
+  <version>1.1</version>
   <vendor email="robinverduijn.github@gmail.com" url="http://www.github.com">RVD</vendor>
 
   <description><![CDATA[
@@ -23,6 +23,7 @@
       <li>0.9:   Rudimentary caching support, use "P4 have" list for smarter operation, better logging.
       <li>1.0:   Initial support for P4 actions other than just add/edit/delete.
       <li>1.0.1: Properly handle unversioned files and refresh of the "Changes" view.
+      <li>1.1:   Support rollback through the VCS interface and add some stubs for P4 checkin, checkout, and history.
       </ul>
       ]]>
   </change-notes>
