@@ -74,7 +74,7 @@ class P4ChangeProvider implements ChangeProvider
     }
     try
     {
-      Collection<IFileSpec> added = P4Wrapper.getP4().openForAdd( FileLists.fromFilePaths( files ) );
+      List<IFileSpec> added = P4Wrapper.getP4().openForAdd( FileLists.fromFilePaths( files ) );
       for ( IFileSpec file : added )
       {
         String path = file.getClientPathString();
@@ -113,7 +113,7 @@ class P4ChangeProvider implements ChangeProvider
       p4.revert( p4.getOpenFiles( FileLists.fromFilePaths( files ) ) );
 
       // Then, perform a P4 delete on the remainder as they must be versioned
-      Collection<IFileSpec> deleted = p4.openForDelete( filterDeletableFiles( files ) );
+      List<IFileSpec> deleted = p4.openForDelete( filterDeletableFiles( files ) );
       for ( IFileSpec file : deleted )
       {
         String path = file.getClientPathString();
