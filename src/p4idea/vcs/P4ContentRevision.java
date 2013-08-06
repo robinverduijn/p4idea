@@ -6,6 +6,7 @@ import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vcs.FilePath;
 import com.intellij.openapi.vcs.VcsException;
 import com.intellij.openapi.vcs.changes.ContentRevision;
+import com.intellij.openapi.vcs.changes.CurrentContentRevision;
 import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vcs.impl.ContentRevisionCache;
 import org.jetbrains.annotations.NotNull;
@@ -19,11 +20,28 @@ class P4ContentRevision implements ContentRevision
   private final FilePath _path;
   private final VcsRevisionNumber _revision;
 
-  public P4ContentRevision( Project project, FilePath path, int revision )
+  private P4ContentRevision( Project project, FilePath path, VcsRevisionNumber revision )
   {
     _project = project;
     _path = path;
-    _revision = new VcsRevisionNumber.Int( revision );
+    _revision = revision;
+  }
+
+  public static ContentRevision create( Project project, FilePath path, int revision )
+  {
+    return create( project, path, new VcsRevisionNumber.Int( revision ) );
+  }
+
+  public static ContentRevision create( Project project, FilePath path, VcsRevisionNumber revision )
+  {
+    if ( revision != null )
+    {
+      return new P4ContentRevision( project, path, revision );
+    }
+    else
+    {
+      return CurrentContentRevision.create( path );
+    }
   }
 
   @Override
@@ -73,7 +91,14 @@ class P4ContentRevision implements ContentRevision
     @Override
     public byte[] compute() throws VcsException, IOException
     {
-      return FileUtil.loadFileBytes( _path.getIOFile() );
+      if ( _path.getIOFile().exists() )
+      {
+        return FileUtil.loadFileBytes( _path.getIOFile() );
+      }
+      else
+      {
+        return null;
+      }
     }
   }
 }

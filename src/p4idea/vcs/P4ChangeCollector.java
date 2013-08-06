@@ -35,6 +35,24 @@ class P4ChangeCollector
     _unversionedFiles = Lists.newArrayList();
   }
 
+  @SuppressWarnings( "ConstantConditions" )
+  public static FilePath getFileForChange( Change change ) throws VcsException
+  {
+    switch ( change.getType() )
+    {
+      case DELETED:
+        return change.getBeforeRevision().getFile();
+      case MODIFICATION:
+        return change.getAfterRevision().getFile();
+      case MOVED:
+        return change.getAfterRevision().getFile();
+      case NEW:
+        return change.getAfterRevision().getFile();
+      default:
+        throw new VcsException( String.format( "Could not determine file from %s", change.getVirtualFile() ) );
+    }
+  }
+
   public Collection<Change> collectChanges( VcsDirtyScope dirtyScope )
       throws VcsException
   {
@@ -64,7 +82,7 @@ class P4ChangeCollector
       VcsException
   {
     Collection<FilePath> localFiles = _p4ignore.getUnignored( dirtyFiles );
-    for ( IFileSpec status : P4Wrapper.getP4().getWhere( localFiles ) )
+    for ( IFileSpec status : P4Wrapper.getP4().getWhere( FileLists.fromFilePaths( localFiles ) ) )
     {
       if ( null != status.getLocalPathString() )
       {
@@ -101,7 +119,7 @@ class P4ChangeCollector
   private boolean isLocal( FilePath filePath ) throws ConnectionException, AccessException
   {
     boolean result = false;
-    for ( IFileSpec status : P4Wrapper.getP4().getHave( Arrays.asList( filePath ) ) )
+    for ( IFileSpec status : P4Wrapper.getP4().getHave( FileLists.fromFilePaths( Arrays.asList( filePath ) ) ) )
     {
       if ( status.getOpStatus() != FileSpecOpStatus.VALID )
       {
@@ -165,44 +183,51 @@ class P4ChangeCollector
 
   private Change getVersionedEdit( FilePath path, IFileSpec file )
   {
-    ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
-    return new Change( null, after, FileStatus.MODIFIED );
+    ContentRevision before = P4ContentRevision.create( _project, path, file.getEndRevision() );
+    ContentRevision after = P4ContentRevision.create( _project, path, null );
+    return new Change( before, after, FileStatus.MODIFIED );
   }
 
   Change getVersionedDelete( FilePath path, IFileSpec file )
   {
-    ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
-    return new Change( null, after, FileStatus.DELETED );
+    ContentRevision before = P4ContentRevision.create( _project, path, file.getEndRevision() );
+    ContentRevision after = null;
+    return new Change( before, after, FileStatus.DELETED );
   }
 
   Change getUnversionedAdd( FilePath path )
   {
-    ContentRevision after = new P4ContentRevision( _project, path, -1 );
-    return new Change( null, after, FileStatus.ADDED );
+    ContentRevision before = null;
+    ContentRevision after = P4ContentRevision.create( _project, path, null );
+    return new Change( before, after, FileStatus.ADDED );
   }
 
   private Change getVersionedAdd( FilePath path, IFileSpec file )
   {
-    ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
-    return new Change( null, after, FileStatus.ADDED );
+    ContentRevision before = null;
+    ContentRevision after = P4ContentRevision.create( _project, path, file.getEndRevision() );
+    return new Change( before, after, FileStatus.ADDED );
   }
 
   private Change getVersionedBranch( FilePath path, IFileSpec file )
   {
-    ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
-    return new Change( null, after, FileStatus.MERGE );
+    ContentRevision before = null;
+    ContentRevision after = P4ContentRevision.create( _project, path, file.getEndRevision() );
+    return new Change( before, after, FileStatus.MERGE );
   }
 
   private Change getVersionedIntegrate( FilePath path, IFileSpec file )
   {
-    ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
-    return new Change( null, after, FileStatus.MERGE );
+    ContentRevision before = P4ContentRevision.create( _project, path, file.getEndRevision() );
+    ContentRevision after = P4ContentRevision.create( _project, path, null );
+    return new Change( before, after, FileStatus.MERGE );
   }
 
   private Change getVersionedUnknown( FilePath path, IFileSpec file )
   {
-    ContentRevision after = new P4ContentRevision( _project, path, file.getEndRevision() );
-    return new Change( null, after, FileStatus.UNKNOWN );
+    ContentRevision before = P4ContentRevision.create( _project, path, file.getStartRevision() );
+    ContentRevision after = P4ContentRevision.create( _project, path, file.getEndRevision() );
+    return new Change( before, after, FileStatus.UNKNOWN );
   }
 
   public Collection<FilePath> getFilesToAdd()
