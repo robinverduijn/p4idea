@@ -3,11 +3,11 @@ package p4idea.perforce;
 import com.google.common.collect.Lists;
 import com.intellij.openapi.vcs.VcsException;
 import com.perforce.p4java.client.IClient;
-import com.perforce.p4java.core.CoreFactory;
-import com.perforce.p4java.core.IChangelist;
+import com.perforce.p4java.core.*;
 import com.perforce.p4java.core.file.FileSpecOpStatus;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
+import com.perforce.p4java.impl.generic.core.file.FileSpec;
 import com.perforce.p4java.server.*;
 import org.jetbrains.annotations.NotNull;
 import p4idea.P4Logger;
@@ -16,6 +16,7 @@ import p4idea.vcs.PerforceVcs;
 
 import java.io.File;
 import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 
 public class P4Wrapper
@@ -435,6 +436,21 @@ public class P4Wrapper
       //List<IFileSpec> fileSpecs = changelist.submit( false );
       List<IFileSpec> fileSpecs = changelist.getFiles( false );
       processResults( fileSpecs );
+    }
+    finally
+    {
+      attemptDisconnect();
+    }
+  }
+
+  public List<IChangelistSummary> getChangelists( String path, int maxCount ) throws ConnectionException,
+      RequestException, AccessException
+  {
+    try
+    {
+      IFileSpec fileSpec = new FileSpec( path );
+      List<IFileSpec> fileSpecs = Arrays.asList( fileSpec );
+      return getP4Server().getChangelists( maxCount, fileSpecs, null, null, false, true, false, false );
     }
     finally
     {
