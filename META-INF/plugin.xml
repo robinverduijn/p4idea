@@ -60,6 +60,8 @@
   <extensions xmlns="com.intellij" defaultExtensionNs="com.intellij">
     <vcs name="Perforce" vcsClass="p4idea.vcs.PerforceVcs" displayName="Perforce" administrativeAreaName=".p4"/>
 
+    <!--checkoutProvider implementation="p4idea.vcs.P4CheckoutProvider"/-->
+
     <projectService serviceInterface="p4idea.ui.P4SettingsValidator" serviceImplementation="p4idea.ui.P4SettingsValidator"/>
   </extensions>
 </idea-plugin>
