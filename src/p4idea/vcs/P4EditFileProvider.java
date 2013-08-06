@@ -10,7 +10,7 @@ import p4idea.FileLists;
 import p4idea.P4Logger;
 import p4idea.perforce.P4Wrapper;
 
-import java.util.Collection;
+import java.util.List;
 
 class P4EditFileProvider implements EditFileProvider
 {
@@ -19,7 +19,7 @@ class P4EditFileProvider implements EditFileProvider
   {
     try
     {
-      Collection<IFileSpec> opened = P4Wrapper.getP4().openForEdit( FileLists.fromVirtualFiles( files ) );
+      List<IFileSpec> opened = P4Wrapper.getP4().openForEdit( FileLists.fromVirtualFiles( files ) );
       for ( IFileSpec file : opened )
       {
         String path = file.getClientPathString();
