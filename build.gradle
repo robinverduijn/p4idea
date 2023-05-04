@@ -1,4 +1,7 @@
-apply plugin: 'java'
+plugins
+{
+  id 'java'
+}
 
 repositories
 {
@@ -7,5 +10,5 @@ repositories
 
 dependencies
 {
-  compile 'com.perforce:p4java:2012.3.551082'
+  implementation 'com.perforce:p4java:2012.3.551082'
 }
