@@ -4,11 +4,3 @@
 
 _classes_
 build
-
-*.class
-
-# Package Files #
-*.jar
-*.war
-*.ear
-*.zip
