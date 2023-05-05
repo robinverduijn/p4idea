@@ -56,13 +56,6 @@ class P4CommittedChangesProvider implements CommittedChangesProvider<P4Committed
 
   @Nullable
   @Override
-  public RepositoryLocation getLocationFor( FilePath root, String repositoryPath )
-  {
-    return getLocationFor( root );
-  }
-
-  @Nullable
-  @Override
   public VcsCommittedListsZipper getZipper()
   {
     return null;
@@ -90,8 +83,8 @@ class P4CommittedChangesProvider implements CommittedChangesProvider<P4Committed
   }
 
   @Override
-  public void loadCommittedChanges( P4ChangeBrowserSettings settings, RepositoryLocation location, int maxCount,
-                                    AsynchConsumer<CommittedChangeList> consumer ) throws VcsException
+  public void loadCommittedChanges( P4ChangeBrowserSettings settings, @NotNull RepositoryLocation location, int maxCount,
+                                    @NotNull AsynchConsumer<? super CommittedChangeList> consumer ) throws VcsException
   {
     try
     {
@@ -139,7 +132,7 @@ class P4CommittedChangesProvider implements CommittedChangesProvider<P4Committed
         return null;
       }
       final P4CommittedChangeList changelist = new P4CommittedChangeList( changelists.get( 0 ) );
-      final FilePath path = new FilePathImpl( file );
+      final FilePath path = new LocalFilePath( file.getPath(), false );
       return new Pair<>( changelist, path );
     }
     catch ( ConnectionException | RequestException | AccessException e )

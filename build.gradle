@@ -15,6 +15,9 @@ intellij {
   type.set( 'IC' )
 }
 
+// See https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin-faq.html#how-to-disable-building-searchable-options
+buildSearchableOptions.enabled = false
+
 dependencies
 {
   implementation 'com.google.guava:guava:31.1-jre'

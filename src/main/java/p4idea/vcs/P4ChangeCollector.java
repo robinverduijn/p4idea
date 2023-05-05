@@ -144,7 +144,7 @@ class P4ChangeCollector
       for ( IFileSpec file : FileLists.mergeLocalPaths( openFiles, whereList ) )
       {
         String pathStr = file.getLocalPathString();
-        FilePath path = new FilePathImpl( new File( pathStr ), false );
+        FilePath path = new LocalFilePath( pathStr, false );
         switch ( file.getAction() )
         {
           case ADD:

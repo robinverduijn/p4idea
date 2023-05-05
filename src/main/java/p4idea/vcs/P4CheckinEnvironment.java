@@ -1,6 +1,7 @@
 package p4idea.vcs;
 
 import com.google.common.collect.Lists;
+import com.intellij.openapi.util.NlsContexts;
 import com.intellij.openapi.vcs.*;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.changes.ChangeList;
@@ -51,15 +52,15 @@ class P4CheckinEnvironment implements CheckinEnvironment
 
   @Nullable
   @Override
-  public List<VcsException> commit( List<Change> changes, String preparedComment )
+  public List<VcsException> commit( List<? extends Change> changes, String preparedComment )
   {
     return commit( changes, preparedComment, FunctionUtil.<Object, Object>nullConstant(), null );
   }
 
   @Nullable
   @Override
-  public List<VcsException> commit( List<Change> changes, String preparedComment, @NotNull NullableFunction<Object,
-      Object> parametersHolder, Set<String> feedback )
+  public List<VcsException> commit( @NotNull List<? extends Change> changes, @NotNull String preparedComment, @NotNull NullableFunction<Object,
+      Object> parametersHolder, @NotNull Set<? super @NlsContexts.DetailedDescription String> feedback )
   {
     List<VcsException> errors = Lists.newArrayList();
     List<FilePath> files = Lists.newArrayList();
@@ -94,7 +95,7 @@ class P4CheckinEnvironment implements CheckinEnvironment
 
   @Nullable
   @Override
-  public List<VcsException> scheduleMissingFileForDeletion( List<FilePath> files )
+  public List<VcsException> scheduleMissingFileForDeletion( @NotNull List<? extends FilePath> files )
   {
     P4Logger.getInstance().log( "scheduleMissingFileForDeletion()" );
     return Lists.newArrayList();
@@ -102,7 +103,7 @@ class P4CheckinEnvironment implements CheckinEnvironment
 
   @Nullable
   @Override
-  public List<VcsException> scheduleUnversionedFilesForAddition( List<VirtualFile> files )
+  public List<VcsException> scheduleUnversionedFilesForAddition( @NotNull List<? extends VirtualFile> files )
   {
     P4Logger.getInstance().log( "scheduleUnversionedFilesForAddition()" );
     return Lists.newArrayList();

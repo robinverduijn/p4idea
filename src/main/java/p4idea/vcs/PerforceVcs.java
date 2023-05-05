@@ -3,7 +3,6 @@ package p4idea.vcs;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vcs.*;
-import com.intellij.openapi.vcs.changes.ChangeListEditHandler;
 import com.intellij.openapi.vcs.changes.ChangeProvider;
 import com.intellij.openapi.vcs.checkin.CheckinEnvironment;
 import com.intellij.openapi.vcs.rollback.RollbackEnvironment;
@@ -17,7 +16,7 @@ import p4idea.P4Logger;
 import p4idea.perforce.P4Wrapper;
 import p4idea.ui.P4SettingsValidator;
 
-public class PerforceVcs extends AbstractVcs<CommittedChangeList>
+public class PerforceVcs extends AbstractVcs
 {
   public static final String NAME = "Perforce";
   private static final VcsKey KEY = AbstractVcs.createKey( NAME );
@@ -101,7 +100,7 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
     }
 
     String path = virtualFile.getCanonicalPath();
-    return null != path && !_rootChecker.isInvalidMapping( path );
+    return null != path && !_rootChecker.validateRoot( path );
   }
 
   @Nullable
@@ -116,13 +115,6 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
   public EditFileProvider getEditFileProvider()
   {
     return _editFileProvider;
-  }
-
-  @Nullable
-  @Override
-  public VcsRootChecker getRootChecker()
-  {
-    return _rootChecker;
   }
 
   @Override
@@ -155,14 +147,6 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
     P4Logger.getInstance().log( message );
   }
 
-  @Nullable
-  @Override
-  public ChangeListEditHandler getEditHandler()
-  {
-    log( "getEditHandler()" );
-    return super.getEditHandler();
-  }
-
   @Override
   public void enableIntegration()
   {
@@ -185,7 +169,7 @@ public class PerforceVcs extends AbstractVcs<CommittedChangeList>
 
   @Nullable
   @Override
-  public CommittedChangesProvider getCommittedChangesProvider()
+  public CommittedChangesProvider<? extends CommittedChangeList, ?> getCommittedChangesProvider()
   {
     return _committedChangesProvider;
   }

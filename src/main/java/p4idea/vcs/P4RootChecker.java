@@ -1,6 +1,7 @@
 package p4idea.vcs;
 
 import com.intellij.openapi.vcs.VcsDirectoryMapping;
+import com.intellij.openapi.vcs.VcsKey;
 import com.intellij.openapi.vcs.VcsRootChecker;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConnectionException;
@@ -11,22 +12,10 @@ import p4idea.perforce.P4Wrapper;
 import java.util.Collection;
 import java.util.Collections;
 
-class P4RootChecker implements VcsRootChecker
+class P4RootChecker extends VcsRootChecker
 {
-  @NotNull
   @Override
-  public Collection<String> getUnregisteredRoots()
-  {
-    return Collections.emptyList();
-  }
-
-  @Override
-  public boolean isInvalidMapping( @NotNull VcsDirectoryMapping mapping )
-  {
-    return isInvalidMapping( mapping.systemIndependentPath() );
-  }
-
-  public boolean isInvalidMapping( @NotNull String path )
+  public boolean validateRoot( @NotNull String path )
   {
     try
     {
@@ -37,5 +26,11 @@ class P4RootChecker implements VcsRootChecker
       P4Logger.getInstance().error( "Error determining P4 mapping", e );
       return true;
     }
+  }
+
+  @Override
+  public @NotNull VcsKey getSupportedVcs()
+  {
+    return PerforceVcs.getKey();
   }
 }

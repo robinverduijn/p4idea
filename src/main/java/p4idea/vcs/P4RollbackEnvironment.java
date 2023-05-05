@@ -24,7 +24,7 @@ class P4RollbackEnvironment implements RollbackEnvironment
   }
 
   @Override
-  public void rollbackChanges( List<Change> changes, List<VcsException> vcsExceptions,
+  public void rollbackChanges( List<? extends Change> changes, List<VcsException> vcsExceptions,
                                @NotNull RollbackProgressListener listener )
   {
     P4Wrapper p4 = P4Wrapper.getP4();
@@ -48,15 +48,13 @@ class P4RollbackEnvironment implements RollbackEnvironment
   }
 
   @Override
-  public void rollbackMissingFileDeletion( List<FilePath> files, List<VcsException> exceptions,
-                                           RollbackProgressListener listener )
+  public void rollbackMissingFileDeletion( List<? extends FilePath> files, List<? super VcsException> exceptions, RollbackProgressListener listener )
   {
     // Not implemented (probably not necessary)
   }
 
   @Override
-  public void rollbackModifiedWithoutCheckout( List<VirtualFile> files, List<VcsException> exceptions,
-                                               RollbackProgressListener listener )
+  public void rollbackModifiedWithoutCheckout( List<? extends VirtualFile> files, List<? super VcsException> exceptions, RollbackProgressListener listener )
   {
     // Not implemented (probably not necessary)
   }

@@ -1,10 +1,12 @@
 package p4idea.vcs;
 
+import com.intellij.openapi.util.NlsSafe;
 import com.intellij.openapi.vcs.AbstractVcs;
 import com.intellij.openapi.vcs.changes.Change;
 import com.intellij.openapi.vcs.versionBrowser.CommittedChangeList;
 import com.perforce.p4java.core.IChangelistSummary;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Date;
@@ -34,6 +36,12 @@ class P4CommittedChangeList implements CommittedChangeList
   public long getNumber()
   {
     return _changelist.getId();
+  }
+
+  @Override
+  public @NlsSafe @Nullable String getBranch()
+  {
+    return null;
   }
 
   @Override

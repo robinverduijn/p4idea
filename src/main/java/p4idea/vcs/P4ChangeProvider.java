@@ -82,7 +82,7 @@ class P4ChangeProvider implements ChangeProvider
         {
           if ( file.getOpStatus() == FileSpecOpStatus.VALID )
           {
-            FilePath filePath = new FilePathImpl( new File( path ), false );
+            FilePath filePath = new LocalFilePath( path, false );
             changes.add( collector.getUnversionedAdd( filePath ) );
             P4Logger.getInstance().log( String.format( "Opened for add: %s", path ) );
           }
@@ -121,7 +121,7 @@ class P4ChangeProvider implements ChangeProvider
         {
           if ( file.getOpStatus() == FileSpecOpStatus.VALID )
           {
-            FilePath filePath = new FilePathImpl( new File( path ), false );
+            FilePath filePath = new LocalFilePath( path, false );
             changes.add( collector.getVersionedDelete( filePath, file ) );
             P4Logger.getInstance().log( String.format( "Opened for delete: %s", path ) );
           }

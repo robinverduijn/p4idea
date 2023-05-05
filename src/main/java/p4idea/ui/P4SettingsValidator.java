@@ -5,6 +5,7 @@ import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.project.Project;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConnectionException;
+import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import p4idea.perforce.P4Settings;
 import p4idea.perforce.P4Wrapper;
@@ -14,10 +15,11 @@ public class P4SettingsValidator extends ExecutableValidator
 {
   private static final String TITLE = "Invalid Perforce Settings: ";
   private static final String DESCRIPTION = "Please inspect your P4 settings.";
+  private static final String SAFE_DESCRIPTION = "Please inspect your P4 settings (safe mode).";
 
   public P4SettingsValidator( @NotNull Project project )
   {
-    super( project, TITLE, DESCRIPTION );
+    super( project, TITLE, DESCRIPTION, SAFE_DESCRIPTION );
   }
 
   @Override
@@ -28,9 +30,9 @@ public class P4SettingsValidator extends ExecutableValidator
 
   @NotNull
   @Override
-  protected Configurable getConfigurable()
+  protected @Nls String getConfigurableDisplayName()
   {
-    return new P4Configurable( myProject );
+    return "P4 Settings";
   }
 
   @Override

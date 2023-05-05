@@ -9,7 +9,7 @@ import p4idea.P4Logger;
 
 import java.net.URISyntaxException;
 
-@State(name = "P4Settings", storages = { @Storage(id = "default", file = StoragePathMacros.PROJECT_FILE) })
+@State(name = "P4Settings", storages = { @Storage(value = StoragePathMacros.PRODUCT_WORKSPACE_FILE) })
 public class P4Settings implements ProjectComponent, PersistentStateComponent<P4Settings>
 {
   private String _p4client;
