@@ -16,6 +16,6 @@ public interface ICache<T>
 
   interface ICacheKey<T>
   {
-    public int getKey();
+    int getKey();
   }
 }

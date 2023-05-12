@@ -57,7 +57,7 @@ public class ICaches
     return cachedEntries;
   }
 
-  public static interface IListInvoker<T>
+  public interface IListInvoker<T>
   {
     List<T> invokeOn( List<T> list ) throws ConnectionException, AccessException;
   }
