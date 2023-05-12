@@ -17,7 +17,7 @@ import java.util.List;
 class P4RollbackEnvironment implements RollbackEnvironment
 {
   @Override
-  public String getRollbackOperationName()
+  public @NotNull String getRollbackOperationName()
   {
     return "Revert";
   }

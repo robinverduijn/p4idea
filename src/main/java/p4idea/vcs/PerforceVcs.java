@@ -54,7 +54,7 @@ public class PerforceVcs extends AbstractVcs
   }
 
   @Override
-  public String getDisplayName()
+  public @NotNull String getDisplayName()
   {
     return NAME;
   }

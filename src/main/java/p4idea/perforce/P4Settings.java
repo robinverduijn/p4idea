@@ -86,7 +86,7 @@ public class P4Settings implements ProjectComponent, PersistentStateComponent<P4
   }
 
   @Override
-  public void loadState( P4Settings settings )
+  public void loadState( @NotNull P4Settings settings )
   {
     if ( null == settings )
     {

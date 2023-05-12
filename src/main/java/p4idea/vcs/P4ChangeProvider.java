@@ -10,6 +10,7 @@ import com.perforce.p4java.core.file.FileSpecOpStatus;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
 import com.perforce.p4java.impl.generic.core.file.FileSpec;
+import org.jetbrains.annotations.NotNull;
 import p4idea.FileLists;
 import p4idea.P4Logger;
 import p4idea.perforce.P4Wrapper;
@@ -27,8 +28,8 @@ class P4ChangeProvider implements ChangeProvider
   }
 
   @Override
-  public void getChanges( VcsDirtyScope dirtyScope, ChangelistBuilder builder, ProgressIndicator progress,
-                          ChangeListManagerGate addGate ) throws VcsException
+  public void getChanges( @NotNull VcsDirtyScope dirtyScope, @NotNull ChangelistBuilder builder, @NotNull ProgressIndicator progress,
+                          @NotNull ChangeListManagerGate addGate ) throws VcsException
   {
     final P4ChangeCollector collector = new P4ChangeCollector( _project );
     final Collection<Change> changes = collector.collectChanges( dirtyScope );

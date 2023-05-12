@@ -32,14 +32,14 @@ class P4CommittedChangesProvider implements CommittedChangesProvider<P4Committed
   }
 
   @Override
-  public ChangesBrowserSettingsEditor<P4ChangeBrowserSettings> createFilterUI( boolean showDateFilter )
+  public @NotNull ChangesBrowserSettingsEditor<P4ChangeBrowserSettings> createFilterUI( boolean showDateFilter )
   {
     return null;
   }
 
   @Nullable
   @Override
-  public RepositoryLocation getLocationFor( FilePath root )
+  public RepositoryLocation getLocationFor( @NotNull FilePath root )
   {
     try
     {
@@ -55,8 +55,8 @@ class P4CommittedChangesProvider implements CommittedChangesProvider<P4Committed
   }
 
   @Override
-  public List<P4CommittedChangeList> getCommittedChanges( P4ChangeBrowserSettings settings, RepositoryLocation location,
-                                                          int maxCount ) throws
+  public @NotNull List<P4CommittedChangeList> getCommittedChanges( P4ChangeBrowserSettings settings, RepositoryLocation location,
+                                                                   int maxCount ) throws
       VcsException
   {
     try
@@ -93,7 +93,7 @@ class P4CommittedChangesProvider implements CommittedChangesProvider<P4Committed
   }
 
   @Override
-  public ChangeListColumn[] getColumns()
+  public ChangeListColumn @NotNull [] getColumns()
   {
     return new ChangeListColumn[]{ ChangeListColumn.NUMBER, ChangeListColumn.DATE, ChangeListColumn.NAME,
                                    ChangeListColumn.DESCRIPTION };
@@ -101,7 +101,7 @@ class P4CommittedChangesProvider implements CommittedChangesProvider<P4Committed
 
   @Nullable
   @Override
-  public VcsCommittedViewAuxiliary createActions( DecoratorManager manager, RepositoryLocation location )
+  public VcsCommittedViewAuxiliary createActions( @NotNull DecoratorManager manager, RepositoryLocation location )
   {
     return null;
   }
@@ -135,7 +135,7 @@ class P4CommittedChangesProvider implements CommittedChangesProvider<P4Committed
   }
 
   @Override
-  public RepositoryLocation getForNonLocal( VirtualFile file )
+  public RepositoryLocation getForNonLocal( @NotNull VirtualFile file )
   {
     return null;
   }

@@ -24,7 +24,7 @@ class P4CheckinEnvironment implements CheckinEnvironment
 {
   @Nullable
   @Override
-  public RefreshableOnComponent createAdditionalOptionsPanel( CheckinProjectPanel panel, PairConsumer<Object, Object>
+  public RefreshableOnComponent createAdditionalOptionsPanel( @NotNull CheckinProjectPanel panel, @NotNull PairConsumer<Object, Object>
       additionalDataConsumer )
   {
     return null;
@@ -32,7 +32,7 @@ class P4CheckinEnvironment implements CheckinEnvironment
 
   @Nullable
   @Override
-  public String getDefaultMessageFor( FilePath[] filesToCheckin )
+  public String getDefaultMessageFor( FilePath @NotNull [] filesToCheckin )
   {
     return null;
   }
@@ -52,7 +52,7 @@ class P4CheckinEnvironment implements CheckinEnvironment
 
   @Nullable
   @Override
-  public List<VcsException> commit( List<? extends Change> changes, String preparedComment )
+  public List<VcsException> commit( @NotNull List<? extends Change> changes, @NotNull String preparedComment )
   {
     return commit( changes, preparedComment, FunctionUtil.nullConstant(), null );
   }
