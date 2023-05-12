@@ -114,7 +114,7 @@ class P4ChangeCollector
   private boolean isLocal( FilePath filePath ) throws ConnectionException, AccessException
   {
     boolean result = false;
-    for ( IFileSpec status : P4Wrapper.getP4().getHave( FileLists.fromFilePaths( Arrays.asList( filePath ) ) ) )
+    for ( IFileSpec status : P4Wrapper.getP4().getHave( FileLists.fromFilePaths( Collections.singletonList( filePath ) ) ) )
     {
       if ( status.getOpStatus() != FileSpecOpStatus.VALID )
       {

@@ -18,7 +18,7 @@ import p4idea.FileLists;
 import p4idea.P4Logger;
 import p4idea.perforce.P4Wrapper;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 class P4CommittedChangesProvider implements CommittedChangesProvider<P4CommittedChangeList,
@@ -43,7 +43,7 @@ class P4CommittedChangesProvider implements CommittedChangesProvider<P4Committed
   {
     try
     {
-      List<IFileSpec> fileSpecs = P4Wrapper.getP4().getWhere( FileLists.fromFilePaths( Arrays.asList( root ) ) );
+      List<IFileSpec> fileSpecs = P4Wrapper.getP4().getWhere( FileLists.fromFilePaths( Collections.singletonList( root ) ) );
       return P4RepositoryLocation.create( fileSpecs.get( 0 ) );
     }
     catch ( ConnectionException | AccessException e )

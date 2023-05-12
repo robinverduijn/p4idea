@@ -16,7 +16,6 @@ import p4idea.vcs.PerforceVcs;
 
 import java.io.File;
 import java.net.URISyntaxException;
-import java.util.Arrays;
 import java.util.List;
 
 public class P4Wrapper
@@ -449,7 +448,7 @@ public class P4Wrapper
     try
     {
       IFileSpec fileSpec = new FileSpec( path );
-      List<IFileSpec> fileSpecs = Arrays.asList( fileSpec );
+      List<IFileSpec> fileSpecs = List.of( fileSpec );
       return getP4Server().getChangelists( maxCount, fileSpecs, null, null, false, true, false, false );
     }
     finally

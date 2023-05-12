@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import p4idea.FileLists;
 import p4idea.perforce.P4Wrapper;
 
-import java.util.Arrays;
 import java.util.List;
 
 class P4RollbackEnvironment implements RollbackEnvironment
@@ -33,7 +32,7 @@ class P4RollbackEnvironment implements RollbackEnvironment
       try
       {
         FilePath path = P4ChangeCollector.getFileForChange( change );
-        p4.revert( FileLists.fromFilePaths( Arrays.asList( path ) ) );
+        p4.revert( FileLists.fromFilePaths( List.of( path ) ) );
         listener.accept( change );
       }
       catch ( VcsException e )
