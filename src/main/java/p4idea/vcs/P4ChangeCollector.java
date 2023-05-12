@@ -191,29 +191,25 @@ class P4ChangeCollector
   Change getVersionedDelete( FilePath path, IFileSpec file )
   {
     ContentRevision before = P4ContentRevision.create( _project, path, file.getEndRevision() );
-    ContentRevision after = null;
-    return new Change( before, after, FileStatus.DELETED );
+    return new Change( before, null, FileStatus.DELETED );
   }
 
   Change getUnversionedAdd( FilePath path )
   {
-    ContentRevision before = null;
     ContentRevision after = P4ContentRevision.create( _project, path, null );
-    return new Change( before, after, FileStatus.ADDED );
+    return new Change( null, after, FileStatus.ADDED );
   }
 
   private Change getVersionedAdd( FilePath path, IFileSpec file )
   {
-    ContentRevision before = null;
     ContentRevision after = P4ContentRevision.create( _project, path, file.getEndRevision() );
-    return new Change( before, after, FileStatus.ADDED );
+    return new Change( null, after, FileStatus.ADDED );
   }
 
   private Change getVersionedBranch( FilePath path, IFileSpec file )
   {
-    ContentRevision before = null;
     ContentRevision after = P4ContentRevision.create( _project, path, file.getEndRevision() );
-    return new Change( before, after, FileStatus.MERGE );
+    return new Change( null, after, FileStatus.MERGE );
   }
 
   private Change getVersionedIntegrate( FilePath path, IFileSpec file )
