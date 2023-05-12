@@ -2,7 +2,6 @@ package p4idea.perforce;
 
 import com.google.common.collect.Lists;
 import com.intellij.openapi.vcs.VcsException;
-import com.perforce.p4java.core.IChangelist;
 import com.perforce.p4java.core.IUser;
 import com.perforce.p4java.core.file.IFileSpec;
 import com.perforce.p4java.exception.*;
@@ -11,11 +10,6 @@ import java.util.List;
 
 class P4Changelists extends P4Wrapper
 {
-  private IChangelist getDefaultChangelist() throws ConnectionException, AccessException, RequestException
-  {
-    return getP4Server().getChangelist( IChangelist.DEFAULT );
-  }
-
   void revertChangelist( int changelist ) throws ConnectionException, RequestException,
       AccessException
   {
