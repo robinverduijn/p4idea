@@ -41,11 +41,7 @@ class P4ChangeCollector
     {
       case DELETED:
         return change.getBeforeRevision().getFile();
-      case MODIFICATION:
-        return change.getAfterRevision().getFile();
-      case MOVED:
-        return change.getAfterRevision().getFile();
-      case NEW:
+      case MODIFICATION, NEW, MOVED:
         return change.getAfterRevision().getFile();
       default:
         throw new VcsException( String.format( "Could not determine file from %s", change.getVirtualFile() ) );
