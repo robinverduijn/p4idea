@@ -35,7 +35,6 @@ class P4ChangeCollector
     _unversionedFiles = Lists.newArrayList();
   }
 
-  @SuppressWarnings( "ConstantConditions" )
   public static FilePath getFileForChange( Change change ) throws VcsException
   {
     switch ( change.getType() )
