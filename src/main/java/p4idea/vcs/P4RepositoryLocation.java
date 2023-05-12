@@ -41,8 +41,4 @@ public class P4RepositoryLocation implements RepositoryLocation
   {
   }
 
-  @Override
-  public void onAfterBatch()
-  {
-  }
 }

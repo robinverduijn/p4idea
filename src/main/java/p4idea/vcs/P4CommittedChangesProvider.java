@@ -54,13 +54,6 @@ class P4CommittedChangesProvider implements CommittedChangesProvider<P4Committed
     }
   }
 
-  @Nullable
-  @Override
-  public VcsCommittedListsZipper getZipper()
-  {
-    return null;
-  }
-
   @Override
   public List<P4CommittedChangeList> getCommittedChanges( P4ChangeBrowserSettings settings, RepositoryLocation location,
                                                           int maxCount ) throws

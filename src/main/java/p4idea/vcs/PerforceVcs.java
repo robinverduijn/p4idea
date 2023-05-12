@@ -118,18 +118,6 @@ public class PerforceVcs extends AbstractVcs
   }
 
   @Override
-  public VcsType getType()
-  {
-    return VcsType.centralized;
-  }
-
-  @Override
-  public boolean areDirectoriesVersionedItems()
-  {
-    return false;
-  }
-
-  @Override
   protected void deactivate()
   {
     try

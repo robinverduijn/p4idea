@@ -69,16 +69,6 @@ public class P4Settings implements ProjectComponent, PersistentStateComponent<P4
   }
 
   @Override
-  public void projectOpened()
-  {
-  }
-
-  @Override
-  public void projectClosed()
-  {
-  }
-
-  @Override
   public void initComponent()
   {
   }
@@ -86,13 +76,6 @@ public class P4Settings implements ProjectComponent, PersistentStateComponent<P4
   @Override
   public void disposeComponent()
   {
-  }
-
-  @NotNull
-  @Override
-  public String getComponentName()
-  {
-    return getClass().getName();
   }
 
   @NotNull

@@ -59,8 +59,4 @@ public class P4Configurable implements Configurable
     _panel.initialize();
   }
 
-  @Override
-  public void disposeUIResources()
-  {
-  }
 }
