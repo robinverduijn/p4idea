@@ -101,7 +101,7 @@ public class PerforceVcsPanel
     }
     catch ( AccessException | ConnectionException | RequestException e )
     {
-      throw new ConfigurationException( "Error Connecting to Perforce" );
+      throw new ConfigurationException( "Error connecting to Perforce" );
     }
   }
 
