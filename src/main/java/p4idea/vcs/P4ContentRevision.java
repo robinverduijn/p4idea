@@ -89,7 +89,7 @@ class P4ContentRevision implements ContentRevision
   private class P4ContentLoader implements Throwable2Computable<byte[], VcsException, IOException>
   {
     @Override
-    public byte[] compute() throws VcsException, IOException
+    public byte[] compute() throws IOException
     {
       if ( _path.getIOFile().exists() )
       {

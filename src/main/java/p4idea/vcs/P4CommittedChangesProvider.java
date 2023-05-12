@@ -121,9 +121,7 @@ class P4CommittedChangesProvider implements CommittedChangesProvider<P4Committed
 
   @Nullable
   @Override
-  public Pair<P4CommittedChangeList, FilePath> getOneList( VirtualFile file, VcsRevisionNumber number ) throws
-      VcsException
-  {
+  public Pair<P4CommittedChangeList, FilePath> getOneList( VirtualFile file, VcsRevisionNumber number ) {
     try
     {
       List<IChangelistSummary> changelists = P4Wrapper.getP4().getChangelists( file.getPath(), 1 );

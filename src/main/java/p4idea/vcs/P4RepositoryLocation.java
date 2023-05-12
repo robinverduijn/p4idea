@@ -1,7 +1,6 @@
 package p4idea.vcs;
 
 import com.intellij.openapi.vcs.RepositoryLocation;
-import com.intellij.openapi.vcs.VcsException;
 import com.perforce.p4java.core.file.IFileSpec;
 import p4idea.P4Logger;
 
@@ -38,7 +37,7 @@ public class P4RepositoryLocation implements RepositoryLocation
   }
 
   @Override
-  public void onBeforeBatch() throws VcsException
+  public void onBeforeBatch()
   {
   }
 
