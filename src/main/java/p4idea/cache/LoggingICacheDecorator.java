@@ -74,7 +74,7 @@ public class LoggingICacheDecorator implements ICache<IFileSpec>
   public void flush()
   {
     _cache.flush();
-    log( String.format( "Flushed" ) );
+    log( "Flushed" );
   }
 
   @Override
