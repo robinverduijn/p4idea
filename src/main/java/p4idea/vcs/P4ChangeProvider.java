@@ -14,7 +14,6 @@ import p4idea.FileLists;
 import p4idea.P4Logger;
 import p4idea.perforce.P4Wrapper;
 
-import java.io.File;
 import java.util.Collection;
 import java.util.List;
 

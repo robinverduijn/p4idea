@@ -1,7 +1,6 @@
 package p4idea.ui;
 
 import com.intellij.execution.ExecutableValidator;
-import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.project.Project;
 import com.perforce.p4java.exception.AccessException;
 import com.perforce.p4java.exception.ConnectionException;
@@ -9,7 +8,6 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
 import p4idea.perforce.P4Settings;
 import p4idea.perforce.P4Wrapper;
-import p4idea.vcs.P4Configurable;
 
 public class P4SettingsValidator extends ExecutableValidator
 {

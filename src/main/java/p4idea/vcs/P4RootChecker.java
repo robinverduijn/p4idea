@@ -1,6 +1,5 @@
 package p4idea.vcs;
 
-import com.intellij.openapi.vcs.VcsDirectoryMapping;
 import com.intellij.openapi.vcs.VcsKey;
 import com.intellij.openapi.vcs.VcsRootChecker;
 import com.perforce.p4java.exception.AccessException;
@@ -8,9 +7,6 @@ import com.perforce.p4java.exception.ConnectionException;
 import org.jetbrains.annotations.NotNull;
 import p4idea.P4Logger;
 import p4idea.perforce.P4Wrapper;
-
-import java.util.Collection;
-import java.util.Collections;
 
 class P4RootChecker extends VcsRootChecker
 {
