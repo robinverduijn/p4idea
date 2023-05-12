@@ -54,7 +54,7 @@ class P4CheckinEnvironment implements CheckinEnvironment
   @Override
   public List<VcsException> commit( List<? extends Change> changes, String preparedComment )
   {
-    return commit( changes, preparedComment, FunctionUtil.<Object, Object>nullConstant(), null );
+    return commit( changes, preparedComment, FunctionUtil.nullConstant(), null );
   }
 
   @Nullable
